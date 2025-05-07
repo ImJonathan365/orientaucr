@@ -10,6 +10,7 @@ package cr.ac.ucr.orientaucr.orientaucr.domain;
  */
 public class NewClass {
     public void hola(){
-    System.out.println("");
+        System.out.println("");
+        System.out.println("");
     }
 }
