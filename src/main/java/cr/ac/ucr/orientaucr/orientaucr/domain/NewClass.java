@@ -9,5 +9,7 @@ package cr.ac.ucr.orientaucr.orientaucr.domain;
  * @author dilan
  */
 public class NewClass {
-    
+    public void hola(){
+    System.out.println("");
+    }
 }
