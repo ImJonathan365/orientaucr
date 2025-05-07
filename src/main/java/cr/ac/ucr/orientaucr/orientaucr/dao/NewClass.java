@@ -9,5 +9,5 @@ package cr.ac.ucr.orientaucr.orientaucr.dao;
  * @author dilan
  */
 public class NewClass {
-    
+   
 }

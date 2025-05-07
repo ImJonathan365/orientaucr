@@ -8,6 +8,7 @@ public class OrientaucrApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OrientaucrApplication.class, args);
+                System.out.println("Dilan hola");
 	}
 
 }
