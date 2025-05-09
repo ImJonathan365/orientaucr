@@ -9,6 +9,8 @@ import cr.ac.ucr.orientaucr.orientaucr.dao.RolesDAO;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -17,7 +19,7 @@ import java.util.LinkedList;
  *
  * @author carlo
  */
-public class RolesDAOImplements implements RolesDAO{
+public class RolesDAOImplements implements RolesDAO {
 
     @Override
     public LinkedList<Roles> getAll(String search) {
@@ -26,46 +28,59 @@ public class RolesDAOImplements implements RolesDAO{
 
     @Override
     public LinkedList<Roles> getAll() {
-         LinkedList<Roles> list = new LinkedList<>();
-    
-    try {
-        Connection cn = ConnectionDB.getConnection();
-        CallableStatement cs = cn.prepareCall("{CALL get_all_Roles()}");
-        ResultSet rs = cs.executeQuery();
-        
-        while (rs.next()) {
-            Roles Rol = new Roles();
-            Rol.setRol_id(rs.getNString(1));
-            Rol.setRol_name(rs.getString(2));
-            list.add(Rol);
+        LinkedList<Roles> list = new LinkedList<>();
+
+        try {
+            Connection cn = ConnectionDB.getConnection();
+            CallableStatement cs = cn.prepareCall("{CALL get_all_Roles()}");
+            ResultSet rs = cs.executeQuery();
+
+            while (rs.next()) {
+                Roles Rol = new Roles();
+                Rol.setRol_id(rs.getNString(1));
+                Rol.setRol_name(rs.getString(2));
+                list.add(Rol);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al ejecutar cargar: " + e.getMessage());
         }
-        
-    } catch (SQLException e) {
-        System.err.println("Error al ejecutar cargar: " + e.getMessage());
-    }
-    
-    System.out.println("Se cargó la lista");
-    return list;
+
+        System.out.println("Se cargó la lista");
+        return list;
     }
 
     @Override
-    public boolean add(Roles t) {
+    public void add(Roles t) {
+        String sql = "{CALL sp_insert_Roles(?)}"; 
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall(sql)) {
+            cs.setString(1, t.getRol_name()); 
+            int rowsAffected = cs.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Se insertó correctamente usando procedimiento");
+                
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al ejecutar procedimiento: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void update(Roles t) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean update(Roles t) {
+    public void deleteById(String i) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public boolean deleteById(Integer i) {
+    public Roles findById(String i) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public Roles findById(Integer i) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
 }

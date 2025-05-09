@@ -8,11 +8,11 @@ public interface CRUD<T> {
 
     public LinkedList<T> getAll();
 
-    public boolean add(T t);
+    public void add(T t);
 
-    public boolean update(T t);
+    public void update(T t);
 
-    public boolean deleteById(Integer i);
+    public void deleteById(String i);
 
-    public T findById(Integer i);
+    public T findById(String i);
 }

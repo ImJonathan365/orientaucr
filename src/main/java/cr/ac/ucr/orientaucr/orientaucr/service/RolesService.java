@@ -24,14 +24,14 @@ public class RolesService {
     public static void add(Roles t){
         data.add(t);
     }
-    public static void DeleteById(int y){
+    public static void DeleteById(String y){
         data.deleteById(y);
     
    }
     public static void updateUser( Roles t){
        data.update(t);
     }
-    public static Roles FindUserByIde(Integer t){
+    public static Roles FindUserByIde(String t){
         return data.findById(t);
     }
 }
