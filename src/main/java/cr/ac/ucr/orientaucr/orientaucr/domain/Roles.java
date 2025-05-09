@@ -9,11 +9,13 @@ package cr.ac.ucr.orientaucr.orientaucr.domain;
  * @author carlo
  */
 public class Roles {
+
     private String rol_name;
     private String rol_id;
 
     // Constructor vacío
-    public Roles() {}
+    public Roles() {
+    }
 
     // Constructor con parámetros
     public Roles(String rol_id, String rol_name) {
@@ -38,6 +40,3 @@ public class Roles {
         this.rol_name = rol_name;
     }
 }
-
-
-
