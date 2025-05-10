@@ -29,9 +29,10 @@ public class CareerDAOImplements implements CareerDAO{
     }
 
     @Override
+
     public void deleteById(String i) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+
+        }
 
     @Override
     public Career findById(String i) {
