@@ -1,9 +1,7 @@
 
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
-import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
-import cr.ac.ucr.orientaucr.orientaucr.service.RolesService;
 import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
 import java.util.Collections;
 import java.util.Map;

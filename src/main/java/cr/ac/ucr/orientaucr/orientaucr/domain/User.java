@@ -16,10 +16,12 @@ public class User {
     private boolean  user_allow_whatsapp_notification;
     private LocalDate create_at; 
     private String user_role;
+    private String userProfilePicture;
+
 
     public User() {}
 
-    public User(String user_id, String user_name, String user_lastname, String user_email, int user_phone_number, Date user_birthdate, String user_password, double user_admission_average, boolean user_allow_email_notification, boolean user_allow_whatsapp_notification, LocalDate create_at, String user_role) {
+    public User(String user_id, String user_name, String user_lastname, String user_email, int user_phone_number, Date user_birthdate, String user_password, double user_admission_average, boolean user_allow_email_notification, boolean user_allow_whatsapp_notification, LocalDate create_at, String user_role, String userProfilePicture) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_lastname = user_lastname;
@@ -32,7 +34,9 @@ public class User {
         this.user_allow_whatsapp_notification = user_allow_whatsapp_notification;
         this.create_at = create_at;
         this.user_role = user_role;
+        this.userProfilePicture = userProfilePicture;
     }
+
 
     public String getUser_id() {
         return user_id;
@@ -129,4 +133,12 @@ public class User {
     public void setUser_role(String user_role) {
         this.user_role = user_role;
     }  
+
+    public String getUserProfilePicture() {
+        return userProfilePicture;
+    }
+
+    public void setUserProfilePicture(String userProfilePicture) {
+        this.userProfilePicture = userProfilePicture;
+    }
 }
