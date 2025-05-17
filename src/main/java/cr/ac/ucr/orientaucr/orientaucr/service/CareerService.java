@@ -18,4 +18,8 @@ public class CareerService {
         data.add(career);
     }
     
+    public static void updateCareer(Career career){
+        data.update(career);
+    }
+    
 }

@@ -102,7 +102,22 @@ public class CareerDAOImplements implements CareerDAO{
 
     @Override
     public void update(Career t) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection cn = ConnectionDB.getConnection();
+        String sql = "call guides_ucr.sp_updateCareer(?, ?, ?, ?);";
+        try {
+            CallableStatement pstmt = cn.prepareCall(sql);
+            pstmt.setString(1, t.getCareer_id());
+            pstmt.setString(2, t.getCareer_name());
+            pstmt.setString(3, t.getCareer_description());
+            pstmt.setInt(4, t.getCareer_duration_years());
+            
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                System.err.println("No se actualizo ninguna fila");
+            }
+        } catch (SQLException ex) {
+            System.err.println("Ocurrio un error al actualizar en la base de datos:"+ ex.getMessage());
+        }
     }
 
     @Override
