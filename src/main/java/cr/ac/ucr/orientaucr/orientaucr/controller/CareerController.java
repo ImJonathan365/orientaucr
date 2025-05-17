@@ -40,5 +40,11 @@ public class CareerController {
         CareerService.addCareer(career);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+    
+    @PostMapping("/api/update")
+    public ResponseEntity<Void> updateCareer(@RequestBody Career career) {
+        CareerService.updateCareer(career);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 }
