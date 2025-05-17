@@ -1,6 +1,5 @@
 
 package cr.ac.ucr.orientaucr.orientaucr.controller;
-
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
 import java.util.Collections;
