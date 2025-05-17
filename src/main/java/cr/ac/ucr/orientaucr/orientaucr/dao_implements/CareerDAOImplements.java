@@ -52,6 +52,7 @@ public class CareerDAOImplements implements CareerDAO{
                 Career career = map.get(career_id);
                 
                 if (career == null) {
+                    
                     career = new Career();
                     career.setCareer_id(career_id);
                     career.setCareer_name(career_name);
@@ -68,8 +69,9 @@ public class CareerDAOImplements implements CareerDAO{
                     characteristic.setCharacteristics_description(characteristics_description);
                 
                     career.getCharacteristicList().add(characteristic);
-                }                
+                }   
             }
+            listCareer.addAll(map.values());
         } catch (SQLException ex) {
             System.err.println("Ocurrio un error en la consulta de base de datos:"+ ex.getMessage());
         }
