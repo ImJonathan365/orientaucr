@@ -6,10 +6,7 @@ import java.util.LinkedList;
 
 public class UserService {
 
-   
-        private static  final UserDAOImplements  dataUser= new UserDAOImplements();
-
-   
+    private static final UserDAOImplements dataUser = new UserDAOImplements();
 
     public static LinkedList<User> getAllUsers() {
         return dataUser.getAll();
@@ -34,4 +31,9 @@ public class UserService {
     public static void deleteUser(String userId) {
         dataUser.deleteById(userId);
     }
+
+    public static User findById(String userId) {
+        return dataUser.findById(userId);
+    }
+
 }

@@ -1,4 +1,3 @@
-
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
@@ -27,4 +26,24 @@ public class UserController {
        UserService.createUser(user);
     return getListUser();
     }
+    @PostMapping("/update")
+@ResponseBody
+public Map updateUser(@RequestBody User user) {
+    UserService.updateUser(user);
+    return getListUser();
+}
+@PostMapping("/delete")
+@ResponseBody
+public Map deleteUser(@RequestBody Map<String, String> body) {
+    String id = body.get("id");
+    UserService.deleteUser(id);
+    return getListUser();
+}
+@PostMapping("/find")
+@ResponseBody
+public User findUser(@RequestBody Map<String, String> body) {
+    String id = body.get("id");
+    return UserService.findById(id);
+}
+
 }
