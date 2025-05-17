@@ -6,33 +6,32 @@ import java.util.LinkedList;
 
 public class UserService {
 
-    private final UserDAOImplements userDao;
+   
+        private static  final UserDAOImplements  dataUser= new UserDAOImplements();
 
-    public UserService() {
-        this.userDao = new UserDAOImplements();
+   
+
+    public static LinkedList<User> getAllUsers() {
+        return dataUser.getAll();
     }
 
-    public LinkedList<User> getAllUsers() {
-        return userDao.getAll();
+    public static LinkedList<User> searchUsers(String searchTerm) {
+        return dataUser.getAll(searchTerm);
     }
 
-    public LinkedList<User> searchUsers(String searchTerm) {
-        return userDao.getAll(searchTerm);
+    public static User getUserById(String userId) {
+        return dataUser.findById(userId);
     }
 
-    public User getUserById(String userId) {
-        return userDao.findById(userId);
+    public static void createUser(User user) {
+        dataUser.add(user);
     }
 
-    public void createUser(User user) {
-        userDao.add(user);
+    public static void updateUser(User user) {
+        dataUser.update(user);
     }
 
-    public void updateUser(User user) {
-        userDao.update(user);
-    }
-
-    public void deleteUser(String userId) {
-        userDao.deleteById(userId);
+    public static void deleteUser(String userId) {
+        dataUser.deleteById(userId);
     }
 }

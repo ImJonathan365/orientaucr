@@ -58,10 +58,8 @@ public class RolesDAOImplements implements RolesDAO {
             int rowsAffected = cs.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Se insertó correctamente usando procedimiento");
-                
+                System.out.println("Se insertó correctamente usando procedimiento");       
             }
-
         } catch (SQLException e) {
             System.err.println("Error al ejecutar procedimiento: " + e.getMessage());
         }
