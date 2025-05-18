@@ -4,15 +4,24 @@ import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
 import java.util.Collections;
 import java.util.Map;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
- @RequestMapping("/api/user")
+@RestController // Combina @Controller + @ResponseBody
+@RequestMapping("/api/user")
+@CrossOrigin(
+    origins = "http://localhost:3000", // URL de tu frontend React
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+    allowCredentials = "true"
+)
 public class UserController {
 
     @GetMapping("/listUser")

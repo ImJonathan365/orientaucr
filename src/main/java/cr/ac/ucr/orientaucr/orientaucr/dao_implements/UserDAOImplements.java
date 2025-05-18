@@ -158,21 +158,43 @@ public class UserDAOImplements implements UserDAO {
         return user;
     }
 
-    private User mapUser(ResultSet rs) throws SQLException {
-        User user = new User();
+private User mapUser(ResultSet rs) throws SQLException {
+    User user = new User();
+    
+    if (rs == null || rs.getMetaData() == null) {
+        throw new SQLException("ResultSet inválido o vacío");
+    }
+    
+    try {
+        // Campos obligatorios
         user.setUser_id(rs.getString("user_id"));
         user.setUser_name(rs.getString("user_name"));
         user.setUser_lastname(rs.getString("user_lastname"));
         user.setUser_email(rs.getString("user_email"));
-        user.setUser_phone_number(rs.getInt("user_phone_number"));
-        user.setUser_birthdate(rs.getDate("user_birthdate"));
-        user.setUser_password(rs.getString("user_password"));
-        user.setUser_admission_average(rs.getDouble("user_admission_average"));
+        
+        // Campos opcionales con manejo de null
+        int phoneNumber = rs.getInt("user_phone_number");
+        user.setUser_phone_number(rs.wasNull() ? null : phoneNumber);
+        
+        Date birthdate = rs.getDate("user_birthdate");
+        user.setUser_birthdate(birthdate);
+        
+        double admissionAvg = rs.getDouble("user_admission_average");
+        user.setUser_admission_average(rs.wasNull() ? null : admissionAvg);
+        
         user.setUser_allow_email_notification(rs.getBoolean("user_allow_email_notification"));
         user.setUser_allow_whatsapp_notification(rs.getBoolean("user_allow_whatsapp_notification"));
-        user.setCreate_at(rs.getDate("create_at").toLocalDate());
+        
+        Date createAt = rs.getDate("create_at");
+        user.setCreate_at(createAt != null ? createAt.toLocalDate() : null);
+        
         user.setUser_role(rs.getString("user_role"));
         user.setUserProfilePicture(rs.getString("user_profile_picture"));
-        return user;
+    } catch (SQLException e) {
+        System.err.println("Error al mapear columna: " + e.getMessage());
+        throw e;
     }
+    
+    return user;
+}
 }
