@@ -27,7 +27,7 @@ public class CareerDAOImplements implements CareerDAO {
         LinkedList<Career> listCareer = new LinkedList<>();
         Map<String, Career> map = new HashMap<>();
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call sp_get_all_careers();";
+        String sql = "call `sp_get_all_careers`;";
 
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
@@ -79,7 +79,7 @@ public class CareerDAOImplements implements CareerDAO {
     @Override
     public void add(Career t) {
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call sp_add_career(?, ?, ?, ?);";
+        String sql = "call `sp_add_career`(?, ?, ?, ?);";
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
             pstmt.setString(1, t.getCareer_id());
@@ -100,7 +100,7 @@ public class CareerDAOImplements implements CareerDAO {
     @Override
     public void update(Career t) {
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call guides_ucr.sp_updateCareer(?, ?, ?, ?);";
+        String sql = "call `sp_update_career`(?, ?, ?, ?);";
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
             pstmt.setString(1, t.getCareer_id());
@@ -120,7 +120,7 @@ public class CareerDAOImplements implements CareerDAO {
     @Override
     public void deleteById(String i) {
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call guides_ucr.sp_deleteCareerById(?);";
+        String sql = "call `sp_delete_career_by_id`(?);";
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
             pstmt.setString(1, i);
@@ -143,7 +143,7 @@ public class CareerDAOImplements implements CareerDAO {
 
         try {
             cn = ConnectionDB.getConnection();
-            String sql = "call guides_ucr.sp_findByIdCareer(?)";
+            String sql = "call `sp_find_by_id_career`(?)";
             pstmt = cn.prepareCall(sql);
             pstmt.setString(1, id);
             rs = pstmt.executeQuery();
