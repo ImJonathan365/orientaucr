@@ -10,7 +10,6 @@ public class CareerService {
     private static CareerDAOImplements data = new CareerDAOImplements();
     
     public static LinkedList<Career> getAllCareers(){
-        //System.out.println("Lista: "+data.getAll().get(0).getCareer_name());
         return data.getAll();
     }
     
@@ -22,4 +21,11 @@ public class CareerService {
         data.update(career);
     }
     
+    public static void deleteCareer(String i){
+        data.deleteById(i);
+    }
+    
+    public static Career findByIdCareer(String i){
+        return data.findById(i);
+    }
 }
