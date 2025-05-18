@@ -22,7 +22,7 @@ public class CharacteristicDAOImplements implements CharacteristicDAO {
 
         try {
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL get_all_characteristics()");
+            CallableStatement cs = cn.prepareCall("CALL sp_get_all_characteristics()");
             ResultSet rs = cs.executeQuery();
 
             while (rs.next()) {
@@ -50,7 +50,7 @@ public class CharacteristicDAOImplements implements CharacteristicDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL add_characteristic(?, ?, ?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_add_characteristic(?, ?, ?)");
             cs.setString(1, t.getCharacteristics_id());
             cs.setString(2, t.getCharacteristics_name());
             cs.setString(3, t.getCharacteristics_description());
@@ -71,7 +71,7 @@ public class CharacteristicDAOImplements implements CharacteristicDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL update_characteristic(?, ?, ?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_update_characteristic(?, ?, ?)");
             cs.setString(1, t.getCharacteristics_id());
             cs.setString(2, t.getCharacteristics_name());
             cs.setString(3, t.getCharacteristics_description());
@@ -92,7 +92,7 @@ public class CharacteristicDAOImplements implements CharacteristicDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL delete_characteristic(?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_delete_characteristic(?)");
             cs.setString(1, id);
             cs.executeUpdate();
 
@@ -112,7 +112,7 @@ public class CharacteristicDAOImplements implements CharacteristicDAO {
         try {
             
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL get_characteristic_by_id(?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_get_characteristic_by_id(?)");
             cs.setString(1, id);
             ResultSet rs = cs.executeQuery();
 

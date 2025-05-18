@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
- @RequestMapping("User")
+ @RequestMapping("/api/user")
 public class UserController {
 
     @GetMapping("/listUser")

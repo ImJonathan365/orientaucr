@@ -60,7 +60,7 @@ public class UserDAOImplements implements UserDAO {
     public void add(User user) {
         try {
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("{CALL sp_create_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+            CallableStatement cs = cn.prepareCall("{CALL sp_create_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
             cs.setString(1, user.getUser_name());
             cs.setString(2, user.getUser_lastname());
             cs.setString(3, user.getUser_email());
@@ -70,7 +70,8 @@ public class UserDAOImplements implements UserDAO {
             cs.setDouble(7, user.getUser_admission_average());
             cs.setBoolean(8, user.isUser_allow_email_notification());
             cs.setBoolean(9, user.isUser_allow_whatsapp_notification());
-            cs.setString(10, user.getUserProfilePicture()); 
+            cs.setString(10, user.getUserProfilePicture());
+            cs.setString(11, user.getUser_role());
             int rowsAffected = cs.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -153,6 +154,7 @@ public class UserDAOImplements implements UserDAO {
             System.err.println("Error al buscar usuario por ID: " + e.getMessage());
         }
 
+        System.out.println("111  "+user.toString());
         return user;
     }
 
@@ -170,7 +172,7 @@ public class UserDAOImplements implements UserDAO {
         user.setUser_allow_whatsapp_notification(rs.getBoolean("user_allow_whatsapp_notification"));
         user.setCreate_at(rs.getDate("create_at").toLocalDate());
         user.setUser_role(rs.getString("user_role"));
-        user.setUserProfilePicture(rs.getString("user_profile_picture")); // <--- agregado
+        user.setUserProfilePicture(rs.getString("user_profile_picture"));
         return user;
     }
 }

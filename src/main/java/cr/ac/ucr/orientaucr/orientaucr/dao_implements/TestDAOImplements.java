@@ -28,7 +28,7 @@ public class TestDAOImplements implements TestDAO {
 
         try {
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL get_vocational_test_questions();");
+            CallableStatement cs = cn.prepareCall("CALL sp_get_vocational_test_questions();");
             ResultSet rs = cs.executeQuery();
 
             while (rs.next()) {
@@ -75,13 +75,13 @@ public class TestDAOImplements implements TestDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL add_vocational_question(?, ?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_add_vocational_question(?, ?)");
             cs.setString(1, t.getQuestion_id());
             cs.setString(2, t.getQuestion_text());
             cs.executeUpdate();
 
             for (Characteristic c : t.getCharacteristics()) {
-                CallableStatement csChar = cn.prepareCall("CALL add_characteristic_to_question(?, ?)");
+                CallableStatement csChar = cn.prepareCall("CALL sp_add_characteristic_to_question(?, ?)");
                 csChar.setString(1, t.getQuestion_id());
                 csChar.setString(2, c.getCharacteristics_id());
                 csChar.executeUpdate();
@@ -103,13 +103,13 @@ public class TestDAOImplements implements TestDAO {
         try {
             
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL update_vocational_question(?, ?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_update_vocational_question(?, ?)");
             cs.setString(1, t.getQuestion_id());
             cs.setString(2, t.getQuestion_text());
             cs.executeUpdate();
             cs.close();
 
-            CallableStatement deleteChar = cn.prepareCall("CALL delete_characteristics_from_question(?)");
+            CallableStatement deleteChar = cn.prepareCall("CALL sp_delete_characteristics_from_question(?)");
             deleteChar.setString(1, t.getQuestion_id());
             deleteChar.executeUpdate();
             deleteChar.close();
@@ -136,7 +136,7 @@ public class TestDAOImplements implements TestDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL delete_vocational_question(?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_delete_vocational_question(?)");
             cs.setString(1, id);
             cs.executeUpdate();
             cs.close();
@@ -156,7 +156,7 @@ public class TestDAOImplements implements TestDAO {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL get_vocational_question_by_id(?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_get_vocational_question_by_id(?)");
             cs.setString(1, id);
             ResultSet rs = cs.executeQuery();
 

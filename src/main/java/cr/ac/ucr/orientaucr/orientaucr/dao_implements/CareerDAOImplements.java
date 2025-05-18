@@ -27,7 +27,7 @@ public class CareerDAOImplements implements CareerDAO {
         LinkedList<Career> listCareer = new LinkedList<>();
         Map<String, Career> map = new HashMap<>();
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call guides_ucr.sp_getAllCareers();";
+        String sql = "call sp_get_all_careers();";
 
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
@@ -79,7 +79,7 @@ public class CareerDAOImplements implements CareerDAO {
     @Override
     public void add(Career t) {
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call guides_ucr.sp_addCareer(?, ?, ?, ?);";
+        String sql = "call sp_add_career(?, ?, ?, ?);";
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
             pstmt.setString(1, t.getCareer_id());
