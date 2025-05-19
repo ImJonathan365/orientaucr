@@ -6,6 +6,9 @@ import java.util.LinkedList;
 
 public class UserService {
 
+    public UserService() {
+    }
+
     private static final UserDAOImplements dataUser = new UserDAOImplements();
 
     public static LinkedList<User> getAllUsers() {
@@ -36,4 +39,7 @@ public class UserService {
         return dataUser.findById(userId);
     }
 
+    public  static User authenticate(String email, String password) {
+        return dataUser.authenticateUser(email, password);
+    }
 }

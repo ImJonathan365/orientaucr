@@ -197,4 +197,28 @@ private User mapUser(ResultSet rs) throws SQLException {
     
     return user;
 }
+
+    @Override
+    public User authenticateUser(String email, String password) {
+      User user = null;
+    try {
+        Connection cn = ConnectionDB.getConnection();
+        CallableStatement cs = cn.prepareCall("{CALL sp_authenticate_user(?, ?)}");
+        cs.setString(1, email);
+        cs.setString(2, password);
+        
+        ResultSet rs = cs.executeQuery();
+        if (rs.next()) {
+            user = mapUser(rs);
+        }
+        
+        rs.close();
+        cs.close();
+        cn.close();
+    } catch (SQLException e) {
+        System.err.println("Error en autenticación: " + e.getMessage());
+        throw new RuntimeException("Error de autenticación: " + e.getMessage());
+    }
+    return user;
+    }
 }
