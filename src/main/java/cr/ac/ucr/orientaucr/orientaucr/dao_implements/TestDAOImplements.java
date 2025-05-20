@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.UUID;
 
 public class TestDAOImplements implements TestDAO {
 
@@ -73,7 +74,7 @@ public class TestDAOImplements implements TestDAO {
     public void add(Test t) {
 
         try {
-
+            t.setQuestion_id(UUID.randomUUID().toString());
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_add_vocational_question(?, ?)");
             cs.setString(1, t.getQuestion_id());
@@ -115,7 +116,7 @@ public class TestDAOImplements implements TestDAO {
             deleteChar.close();
 
             for (Characteristic c : t.getCharacteristics()) {
-                CallableStatement csChar = cn.prepareCall("CALL add_characteristic_to_question(?, ?)");
+                CallableStatement csChar = cn.prepareCall("CALL sp_add_characteristic_to_question(?, ?)");
                 csChar.setString(1, t.getQuestion_id());
                 csChar.setString(2, c.getCharacteristics_id());
                 csChar.executeUpdate();
@@ -129,6 +130,7 @@ public class TestDAOImplements implements TestDAO {
         }
         
     }
+
 
     @Override
     public void deleteById(String id) {
