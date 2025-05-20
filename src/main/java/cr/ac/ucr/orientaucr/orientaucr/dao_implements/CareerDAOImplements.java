@@ -79,13 +79,12 @@ public class CareerDAOImplements implements CareerDAO {
     @Override
     public void add(Career t) {
         Connection cn = ConnectionDB.getConnection();
-        String sql = "call `sp_add_career`(?, ?, ?, ?);";
+        String sql = "call `sp_add_career`(?, ?, ?);";
         try {
             CallableStatement pstmt = cn.prepareCall(sql);
-            pstmt.setString(1, t.getCareer_id());
-            pstmt.setString(2, t.getCareer_name());
-            pstmt.setString(3, t.getCareer_description());
-            pstmt.setInt(4, t.getCareer_duration_years());
+            pstmt.setString(1, t.getCareer_name());
+            pstmt.setString(2, t.getCareer_description());
+            pstmt.setInt(3, t.getCareer_duration_years());
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
@@ -128,6 +127,8 @@ public class CareerDAOImplements implements CareerDAO {
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 System.err.println("No se actualizo ninguna fila");
+            }else{
+                System.out.println("Se insertó");
             }
         } catch (SQLException ex) {
             System.err.println("Ocurrio un error al eliminar en la base de datos:" + ex.getMessage());
