@@ -1,5 +1,8 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Role;
+import cr.ac.ucr.orientaucr.orientaucr.domain.UpdateUserRolePermissionDTO;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
 import java.util.LinkedList;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -39,24 +43,24 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    
+
     }
 
-  @PostMapping("/update")
-public ResponseEntity<Void> updateUser(@RequestBody User user) {
-    try {
-        if (user.getUser_password() == null || user.getUser_password().trim().isEmpty()) {
-            User original = UserService.getUserById(user.getUser_id());
-            if (original != null) {
-                user.setUser_password(original.getUser_password());
+    @PostMapping("/update")
+    public ResponseEntity<Void> updateUser(@RequestBody User user) {
+        try {
+            if (user.getUser_password() == null || user.getUser_password().trim().isEmpty()) {
+                User original = UserService.getUserById(user.getUser_id());
+                if (original != null) {
+                    user.setUser_password(original.getUser_password());
+                }
             }
+            UserService.updateUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        UserService.updateUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-}
 
     @DeleteMapping("/delete/{user_id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("user_id") String userId) {
@@ -67,12 +71,12 @@ public ResponseEntity<Void> updateUser(@RequestBody User user) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
+
     @GetMapping("/search/{user_id}")
     public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
         try {
             User user = UserService.getUserById(userId);
-            
+
             if (user != null) {
                 return ResponseEntity.ok(user);
             } else {
@@ -87,10 +91,10 @@ public ResponseEntity<Void> updateUser(@RequestBody User user) {
     public ResponseEntity<User> loginUser(@RequestBody User credentials) {
         try {
             User user = UserService.authenticate(
-                credentials.getUser_email(), 
-                credentials.getUser_password()
+                    credentials.getUser_email(),
+                    credentials.getUser_password()
             );
-            
+
             if (user != null) {
                 return ResponseEntity.ok(user);
             } else {
@@ -100,4 +104,43 @@ public ResponseEntity<Void> updateUser(@RequestBody User user) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/permissions")
+    public ResponseEntity<LinkedList<Permission>> getAllPermissionOfUser(
+            @RequestParam("userId") String userId,
+            @RequestParam("roleId") String roleId) {
+
+        LinkedList<Permission> permissions = UserService.getAllPermissionOfUser(userId, roleId);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @GetMapping("/role-permissions")
+    public ResponseEntity<LinkedList<Permission>> getAllPermissionOfRole(
+            @RequestParam("roleId") String roleId) {
+
+        LinkedList<Permission> permissions = UserService.getAllPermissionOfRole(roleId);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<LinkedList<Role>> getAllRoles() {
+        LinkedList<Role> roles = UserService.getAllRoles();
+        return ResponseEntity.ok(roles);
+    }
+
+    @PostMapping("/update-role-permissions")
+    public ResponseEntity<String> updateUserRoleAndPermissions(
+            @RequestBody UpdateUserRolePermissionDTO request) {
+        try {
+            UserService.updateUserRoleAndPermission(
+                    request.getUserId(),
+                    request.getRoleId(),
+                    request.getPermissions()
+            );
+            return ResponseEntity.ok("Rol y permisos actualizados correctamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al actualizar rol y permisos.");
+        }
+    }
+
 }
