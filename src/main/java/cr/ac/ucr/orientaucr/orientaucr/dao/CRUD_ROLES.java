@@ -21,5 +21,6 @@ public interface CRUD_ROLES <T> {
 
     public void deleteById(String user_id,String permission_id);
 
+    public String FindById(String user_id);
    
 }

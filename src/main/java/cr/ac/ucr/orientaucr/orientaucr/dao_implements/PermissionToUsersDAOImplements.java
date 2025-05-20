@@ -148,5 +148,27 @@ public class PermissionToUsersDAOImplements implements PermissionsDAO {
             System.err.println("Error al eliminar permiso del usuario: " + e.getMessage());
         }
     }
+     @Override
+public String FindById(String user_id) {
+    String rolName = null;
 
+    try (Connection cn = ConnectionDB.getConnection();
+         CallableStatement cs = cn.prepareCall("{CALL sp_get_user_rol_name(?)}")) {
+
+        cs.setString(1, user_id);  // Se pasa correctamente el ID del usuario
+
+        try (ResultSet rs = cs.executeQuery()) {
+            if (rs.next()) {
+                rolName = rs.getString("rol_name");  // Se obtiene solo el rol_name
+            }
+        }
+
+        System.out.println("Consulta de rol realizada .");
+
+    } catch (SQLException e) {
+        System.err.println("Error al obtener el rol por ID: " + e.getMessage());
+    }
+ System.out.print(rolName);
+    return rolName;
+}
 }

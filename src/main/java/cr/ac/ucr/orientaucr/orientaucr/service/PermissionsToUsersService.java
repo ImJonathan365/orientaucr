@@ -29,4 +29,7 @@ public class PermissionsToUsersService  {
    public static void update (String user_id,String rol_id){
    data.update(user_id, rol_id);
    }
+    public static String findById (String user_id){
+   return data.FindById(user_id);
+   }
 }

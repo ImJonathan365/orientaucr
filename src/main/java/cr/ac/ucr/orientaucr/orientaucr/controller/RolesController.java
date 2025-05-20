@@ -75,4 +75,20 @@ public class RolesController {
         LinkedList<?> updatedRoles = PermissionsToUsersService.getAllRolesOrPermissions(rol_id);
         return Collections.singletonMap("data", updatedRoles);
     }
+     @GetMapping("/FindById")
+@ResponseBody
+public Map<String, Object> getRolNameByUserId(@RequestParam String user_id) {
+    if (user_id == null || user_id.isEmpty()) {
+        return Collections.singletonMap("error", "El parámetro 'user_id' es obligatorio");
+    }
+
+    String rolName = PermissionsToUsersService.findById(user_id);
+
+    if (rolName == null) {
+        return Collections.singletonMap("error", "No se encontró un rol para el user_id especificado");
+    }
+
+    return Collections.singletonMap("rol_name", rolName);
+}
+
 }
