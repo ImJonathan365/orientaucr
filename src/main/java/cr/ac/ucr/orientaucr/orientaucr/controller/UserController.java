@@ -46,12 +46,12 @@ public class UserController {
 public ResponseEntity<Void> updateUser(@RequestBody User user) {
     try {
         if (user.getUser_password() == null || user.getUser_password().trim().isEmpty()) {
-    User original = UserService.getUserById(user.getUser_id());
-    if (original != null) {
-        user.setUser_password(original.getUser_password());
-    }
-}
-
+            User original = UserService.getUserById(user.getUser_id());
+            if (original != null) {
+                user.setUser_password(original.getUser_password());
+            }
+        }
+        UserService.updateUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
