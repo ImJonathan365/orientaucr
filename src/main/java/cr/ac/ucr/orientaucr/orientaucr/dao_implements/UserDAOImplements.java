@@ -59,6 +59,7 @@ public class UserDAOImplements implements UserDAO {
     @Override
     public void add(User user) {
         try {
+            System.out.println(user.getUser_role());
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("{CALL sp_create_user(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
             cs.setString(1, user.getUser_name());
