@@ -4,12 +4,12 @@
  */
 package cr.ac.ucr.orientaucr.orientaucr.dao;
 
-import cr.ac.ucr.orientaucr.orientaucr.domain.PermissionToUsers;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 
 /**
  *
  * @author carlo
  */
-public interface PermissionsDAO extends CRUD_ROLES<PermissionToUsers> {
+public interface RolesDAO extends CRUD<Roles>{
     
 }

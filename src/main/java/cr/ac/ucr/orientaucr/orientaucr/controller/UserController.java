@@ -2,7 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Role;
-import cr.ac.ucr.orientaucr.orientaucr.domain.UpdateUserRolePermissionDTO;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
 import java.util.LinkedList;
@@ -130,17 +130,11 @@ public class UserController {
 
     @PostMapping("/update-role-permissions")
     public ResponseEntity<String> updateUserRoleAndPermissions(
-            @RequestBody UpdateUserRolePermissionDTO request) {
-        try {
-            UserService.updateUserRoleAndPermission(
-                    request.getUserId(),
-                    request.getRoleId(),
-                    request.getPermissions()
-            );
+            @RequestBody Roles request) {
+       
             return ResponseEntity.ok("Rol y permisos actualizados correctamente.");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al actualizar rol y permisos.");
-        }
+        
+        
+    
     }
-
 }
