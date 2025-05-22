@@ -4,12 +4,14 @@
  */
 package cr.ac.ucr.orientaucr.orientaucr.dao;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
+import java.util.LinkedList;
 
 /**
  *
  * @author carlo
  */
 public interface RolesDAO extends CRUD<Roles>{
-    
+     public LinkedList<Permission> getAllPermissions();
 }

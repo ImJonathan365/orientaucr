@@ -4,14 +4,14 @@ public class Permission {
 
     private String permission_id;
     private String permission_name;
-    private String descripcion;
+    private String permission_description;
 
     public Permission() {}
 
-    public Permission(String permission_id, String permission_name, String descripcion) {
+    public Permission(String permission_id, String permission_name, String permission_description) {
         this.permission_id = permission_id;
         this.permission_name = permission_name;
-        this.descripcion = descripcion;
+        this.permission_description = permission_description;
     }
 
     public String getPermission_id() {
@@ -30,12 +30,14 @@ public class Permission {
         this.permission_name = permission_name;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getPermission_description() {
+        return permission_description;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setPermission_description(String permission_description) {
+        this.permission_description = permission_description;
     }
+
+    
     
 }

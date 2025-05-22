@@ -242,7 +242,7 @@ public class UserDAOImplements implements UserDAO {
                 Permission p = new Permission();
                 p.setPermission_id(rs.getString(1));
                 p.setPermission_name(rs.getString(2));
-                p.setDescripcion(rs.getString(3));
+                p.setPermission_description(rs.getString(3));
                 permissions.add(p);
             }
 
@@ -270,7 +270,7 @@ public class UserDAOImplements implements UserDAO {
                 Permission p = new Permission();
                 p.setPermission_id(rs.getString(1));
                 p.setPermission_name(rs.getString(2));
-                p.setDescripcion(rs.getString(3));
+                p.setPermission_description(rs.getString(3));
                 permissions.add(p);
             }
 

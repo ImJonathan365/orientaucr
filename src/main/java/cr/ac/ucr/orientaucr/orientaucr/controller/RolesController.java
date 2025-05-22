@@ -1,17 +1,20 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
-import cr.ac.ucr.orientaucr.orientaucr.domain.Test;
 import cr.ac.ucr.orientaucr.orientaucr.service.RolesService;
-import cr.ac.ucr.orientaucr.orientaucr.service.TestService;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.LinkedList;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+@RestController
 @RequestMapping("/api/roles")
 public class RolesController {
 
@@ -19,12 +22,12 @@ public class RolesController {
 
     @GetMapping("/all")
     public LinkedList<Roles> getAll() {
-        return service.getAllTest();
+        return service.getAllRoles();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Roles> getById(@PathVariable String id) {
-        Roles rol = service.findTestById(id);
+        Roles rol = service.findById(id);
         if (rol != null) {
             return ResponseEntity.ok(rol);
         } else {
@@ -34,19 +37,24 @@ public class RolesController {
 
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody Roles rol) {
-        service.addTest(rol);
+        service.add(rol);
         return ResponseEntity.ok("Pregunta agregada correctamente.");
     }
 
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody Roles rol) {
-        service.updateTest(rol);
+        service.update(rol);
         return ResponseEntity.ok("Pregunta actualizada correctamente.");
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
-        service.deleteTestById(id);
+        service.deleteById(id);
         return ResponseEntity.ok("Pregunta eliminada correctamente.");
     }
+     @GetMapping("/allPermissions")
+    public LinkedList<Permission> getAllPermissions() {
+        return service.getAllPermissions();
+    }
+
 }

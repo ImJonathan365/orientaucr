@@ -5,12 +5,12 @@ import java.util.LinkedList;
 public class Roles {
     
     private String rol_id;
-    private String roleName;
+    private String rol_name;
     private LinkedList<Permission> permissions;
 
-    public Roles(String rol_id, String roleName, LinkedList<Permission> permissions) {
+    public Roles(String rol_id, String rol_name, LinkedList<Permission> permissions) {
         this.rol_id = rol_id;
-        this.roleName = roleName;
+        this.rol_name = rol_name;
         this.permissions = permissions;
     }
 
@@ -25,15 +25,14 @@ public class Roles {
         this.rol_id = rol_id;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String getRol_name() {
+        return rol_name;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRol_name(String rol_name) {
+        this.rol_name = rol_name;
     }
 
-   
    
 
     public LinkedList<Permission> getPermissions() {

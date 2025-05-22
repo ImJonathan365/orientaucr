@@ -50,7 +50,7 @@ public LinkedList<Roles> getAll() {
             if (rol == null) {
                 rol = new Roles();
                 rol.setRol_id(rol_id);
-                rol.setRoleName(rol_name);  // o setRoleName según tu método
+                rol.setRol_name(rol_name);  // o setRoleName según tu método
                 rol.setPermissions(new LinkedList<>());
                 map.put(rol_id, rol);
             }
@@ -58,7 +58,7 @@ public LinkedList<Roles> getAll() {
             Permission p = new Permission();
             p.setPermission_id(permission_id);
             p.setPermission_name(permission_name);
-            p.setDescripcion(permission_description);
+            p.setPermission_description(permission_description);
 
             rol.getPermissions().add(p);
         }
@@ -80,7 +80,7 @@ public LinkedList<Roles> getAll() {
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_add_role(?, ?)");
             cs.setString(1, R.getRol_id());
-            cs.setString(2, R.getRoleName());
+            cs.setString(2, R.getRol_name());
             cs.executeUpdate();
 
             for (Permission P : R.getPermissions()) {
@@ -106,7 +106,7 @@ public LinkedList<Roles> getAll() {
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_update_role(?, ?)");
             cs.setString(1, t.getRol_id());
-            cs.setString(2, t.getRoleName());
+            cs.setString(2, t.getRol_name());
             cs.executeUpdate();
             cs.close();
 
@@ -122,6 +122,7 @@ public LinkedList<Roles> getAll() {
                 csChar.executeUpdate();
                 csChar.close();
             }
+            System.out.println("Pase por aqui");
 
             cn.close();
 
@@ -154,7 +155,7 @@ public LinkedList<Roles> getAll() {
         try {
 
             Connection cn = ConnectionDB.getConnection();
-            CallableStatement cs = cn.prepareCall("CALL sp_get_vocational_question_by_id(?)");
+            CallableStatement cs = cn.prepareCall("CALL sp_get_role_by_id(?)");
             cs.setString(1, id);
             ResultSet rs = cs.executeQuery();
 
@@ -162,14 +163,14 @@ public LinkedList<Roles> getAll() {
                 if (rol == null) {
                     rol = new Roles();
                     rol.setRol_id(rs.getString(1));
-                    rol.setRoleName(rs.getString(2));
+                    rol.setRol_name(rs.getString(2));
                     rol.setPermissions(new LinkedList<>());
                 }
 
                 Permission p = new Permission();
                 p.setPermission_id(rs.getString(3));
                 p.setPermission_name(rs.getString(4));
-                p.setDescripcion(rs.getString(5));
+                p.setPermission_description(rs.getString(5));
 
                 rol.getPermissions().add(p);
             }
@@ -177,11 +178,39 @@ public LinkedList<Roles> getAll() {
             rs.close();
             cs.close();
             cn.close();
-
+            System.out.println("Error Test findById");
         } catch (SQLException e) {
             System.out.println("Error Test findById: " + e.getMessage());
         }
 
         return rol;
+    }
+
+    @Override
+    public LinkedList<Permission> getAllPermissions() {
+       LinkedList<Permission> list = new LinkedList<>();
+
+        try {
+            Connection cn = ConnectionDB.getConnection();
+            CallableStatement cs = cn.prepareCall("CALL sp_get_all_permissions()");
+            ResultSet rs = cs.executeQuery();
+
+            while (rs.next()) {
+                Permission P = new Permission();
+                P.setPermission_id(rs.getString(1));
+                P.setPermission_name(rs.getString(2));
+                P.setPermission_description(rs.getString(3));
+                list.add(P);
+            }
+
+            rs.close();
+            cs.close();
+            cn.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error Chracteristic getAll: " + e.getMessage());
+        }
+
+        return list;
     }
 }

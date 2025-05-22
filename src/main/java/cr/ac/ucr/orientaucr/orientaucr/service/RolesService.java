@@ -6,6 +6,7 @@ package cr.ac.ucr.orientaucr.orientaucr.service;
 
 import cr.ac.ucr.orientaucr.orientaucr.dao_implements.RolesDAOImplements;
 import cr.ac.ucr.orientaucr.orientaucr.dao_implements.UserDAOImplements;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Test;
 import java.util.LinkedList;
@@ -20,23 +21,26 @@ public class RolesService {
         return dataRoles.getAll(search);
     }
     
-    public LinkedList<Roles> getAllTest(){
+    public LinkedList<Roles> getAllRoles(){
         return dataRoles.getAll();
     }
+    public LinkedList<Permission> getAllPermissions(){
+        return dataRoles.getAllPermissions();
+    }
     
-    public void addTest(Roles r) {
+    public void add(Roles r) {
         dataRoles.add(r);
     }
     
-    public void updateTest(Roles t) {
+    public void update(Roles t) {
         dataRoles.update(t);
     }
     
-    public void deleteTestById(String id) {
+    public void deleteById(String id) {
         dataRoles.deleteById(id);
     }
     
-    public Roles findTestById(String id) {
+    public Roles findById(String id) {
         return dataRoles.findById(id);
     }
 }
