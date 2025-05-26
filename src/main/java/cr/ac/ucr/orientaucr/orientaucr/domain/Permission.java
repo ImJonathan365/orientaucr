@@ -38,6 +38,4 @@ public class Permission {
         this.permission_description = permission_description;
     }
 
-    
-    
 }

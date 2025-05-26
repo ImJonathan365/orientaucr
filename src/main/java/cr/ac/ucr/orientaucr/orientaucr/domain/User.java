@@ -1,7 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
-import java.time.LocalDate;
 import java.util.Date;
+import java.util.LinkedList;
 
 public class User {
     private String user_id;
@@ -12,16 +12,13 @@ public class User {
     private Date user_birthdate;
     private String user_password;
     private double user_admission_average;
+    private String user_profile_picture;
     private boolean user_allow_email_notification;
-    private boolean  user_allow_whatsapp_notification;
-    private LocalDate create_at; 
-    private String user_role;
-    private String userProfilePicture;
-
-
+    private LinkedList<Roles> user_roles;
+    
     public User() {}
 
-    public User(String user_id, String user_name, String user_lastname, String user_email, int user_phone_number, Date user_birthdate, String user_password, double user_admission_average, boolean user_allow_email_notification, boolean user_allow_whatsapp_notification, LocalDate create_at, String user_role, String userProfilePicture) {
+    public User(String user_id, String user_name, String user_lastname, String user_email, int user_phone_number, Date user_birthdate, String user_password, double user_admission_average, String user_profile_picture, boolean user_allow_email_notification, LinkedList<Roles> user_roles) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_lastname = user_lastname;
@@ -30,13 +27,10 @@ public class User {
         this.user_birthdate = user_birthdate;
         this.user_password = user_password;
         this.user_admission_average = user_admission_average;
+        this.user_profile_picture = user_profile_picture;
         this.user_allow_email_notification = user_allow_email_notification;
-        this.user_allow_whatsapp_notification = user_allow_whatsapp_notification;
-        this.create_at = create_at;
-        this.user_role = user_role;
-        this.userProfilePicture = userProfilePicture;
+        this.user_roles = user_roles;
     }
-
 
     public String getUser_id() {
         return user_id;
@@ -102,6 +96,14 @@ public class User {
         this.user_admission_average = user_admission_average;
     }
 
+    public String getUser_profile_picture() {
+        return user_profile_picture;
+    }
+
+    public void setUser_profile_picture(String user_profile_picture) {
+        this.user_profile_picture = user_profile_picture;
+    }
+
     public boolean isUser_allow_email_notification() {
         return user_allow_email_notification;
     }
@@ -110,35 +112,12 @@ public class User {
         this.user_allow_email_notification = user_allow_email_notification;
     }
 
-    public boolean isUser_allow_whatsapp_notification() {
-        return user_allow_whatsapp_notification;
+    public LinkedList<Roles> getUser_roles() {
+        return user_roles;
     }
 
-    public void setUser_allow_whatsapp_notification(boolean user_allow_whatsapp_notification) {
-        this.user_allow_whatsapp_notification = user_allow_whatsapp_notification;
+    public void setUser_roles(LinkedList<Roles> user_roles) {
+        this.user_roles = user_roles;
     }
-
-    public LocalDate getCreate_at() {
-        return create_at;
-    }
-
-    public void setCreate_at(LocalDate create_at) {
-        this.create_at = create_at;
-    }
-
-    public String getUser_role() {
-        return user_role;
-    }
-
-    public void setUser_role(String user_role) {
-        this.user_role = user_role;
-    }  
-
-    public String getUserProfilePicture() {
-        return userProfilePicture;
-    }
-
-    public void setUserProfilePicture(String userProfilePicture) {
-        this.userProfilePicture = userProfilePicture;
-    }
+    
 }
