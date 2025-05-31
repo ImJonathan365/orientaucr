@@ -84,7 +84,7 @@ public LinkedList<Roles> getAll() {
             cs.executeUpdate();
 
             for (Permission P : R.getPermissions()) {
-                CallableStatement csChar = cn.prepareCall("CALL sp_add_permission(?, ?)");
+                CallableStatement csChar = cn.prepareCall("CALL sp_assign_permission_to_role(?, ?)");
                 csChar.setString(1, R.getRol_id());
                 csChar.setString(2, P.getPermission_id());
                 csChar.executeUpdate();
@@ -116,7 +116,7 @@ public LinkedList<Roles> getAll() {
             deleteChar.close();
 
             for (Permission p : t.getPermissions()) {
-                CallableStatement csChar = cn.prepareCall("CALL sp_add_permission(?, ?)");
+                CallableStatement csChar = cn.prepareCall("CALL sp_assign_permission_to_role(?, ?)");
                 csChar.setString(1, t.getRol_id());
                 csChar.setString(2, p.getPermission_id());
                 csChar.executeUpdate();

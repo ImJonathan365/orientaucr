@@ -186,12 +186,9 @@ public class UserDAOImplements implements UserDAO {
             user.setUser_admission_average(rs.wasNull() ? null : admissionAvg);
 
             user.setUser_allow_email_notification(rs.getBoolean("user_allow_email_notification"));
-            user.setUser_allow_whatsapp_notification(rs.getBoolean("user_allow_whatsapp_notification"));
 
             Date createAt = rs.getDate("create_at");
             user.setCreate_at(createAt != null ? createAt.toLocalDate() : null);
-
-            user.setUser_role(rs.getString("user_role"));
             user.setUserProfilePicture(rs.getString("user_profile_picture"));
             user.setUser_password(rs.getString("user_password"));
 
