@@ -180,7 +180,7 @@ public LinkedList<Roles> getAll() {
             cn.close();
             System.out.println("Error Test findById");
         } catch (SQLException e) {
-            System.out.println("Error Test findById: " + e.getMessage());
+            System.out.println("Error Test findBYId: " + e.getMessage());
         }
 
         return rol;
