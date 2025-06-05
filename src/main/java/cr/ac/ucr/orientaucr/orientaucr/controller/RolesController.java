@@ -2,7 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
-import cr.ac.ucr.orientaucr.orientaucr.service.RolesService;
+import cr.ac.ucr.orientaucr.orientaucr.services.RolesService;
 
 import java.util.LinkedList;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Test;
-import cr.ac.ucr.orientaucr.orientaucr.service.TestService;
+import cr.ac.ucr.orientaucr.orientaucr.services.TestService;
 import java.util.LinkedList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

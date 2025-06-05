@@ -1,39 +1,59 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.util.LinkedList;
 
+@Entity
+@Table(name = "roles")
 public class Roles {
-    
-    private String rol_id;
-    private String rol_name;
-    private LinkedList<Permission> permissions;
 
-    public Roles(String rol_id, String rol_name, LinkedList<Permission> permissions) {
-        this.rol_id = rol_id;
-        this.rol_name = rol_name;
-        this.permissions = permissions;
+    @Id
+    @Column(name = "rol_id", length = 36)
+    private String rolId;
+
+    @Column(name = "rol_name", nullable = false, unique = true, length = 50)
+    private String rolName;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "rol_permission",
+        joinColumns = @JoinColumn(name = "rol_id"),
+        inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private LinkedList<Permission> permissions = new LinkedList<>();
+
+    @ManyToMany(mappedBy = "userRoles")
+    private LinkedList<User> users = new LinkedList<>();
+
+    public Roles() {}
+
+    public Roles(String rolId, String rolName) {
+        this.rolId = rolId;
+        this.rolName = rolName;
     }
 
-    public Roles() {
+    public String getRolId() {
+        return rolId;
     }
 
-    public String getRol_id() {
-        return rol_id;
+    public void setRolId(String rolId) {
+        this.rolId = rolId;
     }
 
-    public void setRol_id(String rol_id) {
-        this.rol_id = rol_id;
+    public String getRolName() {
+        return rolName;
     }
 
-    public String getRol_name() {
-        return rol_name;
+    public void setRolName(String rolName) {
+        this.rolName = rolName;
     }
-
-    public void setRol_name(String rol_name) {
-        this.rol_name = rol_name;
-    }
-
-   
 
     public LinkedList<Permission> getPermissions() {
         return permissions;
@@ -41,6 +61,14 @@ public class Roles {
 
     public void setPermissions(LinkedList<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public LinkedList<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(LinkedList<User> users) {
+        this.users = users;
     }
     
 }

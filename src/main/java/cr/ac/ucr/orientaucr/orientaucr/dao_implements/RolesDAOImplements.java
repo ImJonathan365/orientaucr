@@ -23,59 +23,57 @@ import java.util.UUID;
  *
  * @author carlo
  */
-public class RolesDAOImplements implements RolesDAO{
+public class RolesDAOImplements implements RolesDAO {
 
     @Override
     public LinkedList<Roles> getAll(String search) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-   @Override
-public LinkedList<Roles> getAll() {
-    LinkedList<Roles> list = new LinkedList<>();
-    Map<String, Roles> map = new HashMap<>();
+    @Override
+    public LinkedList<Roles> getAll() {
+        LinkedList<Roles> list = new LinkedList<>();
+        Map<String, Roles> map = new HashMap<>();
+        /*
+        try (Connection cn = ConnectionDB.getConnection(); CallableStatement cs = cn.prepareCall("CALL sp_get_roles_permissions();"); ResultSet rs = cs.executeQuery()) {
 
-    try (Connection cn = ConnectionDB.getConnection();
-         CallableStatement cs = cn.prepareCall("CALL sp_get_roles_permissions();");
-         ResultSet rs = cs.executeQuery()) {
+            while (rs.next()) {
+                String rol_id = rs.getString(1);
+                String rol_name = rs.getString(2);
+                String permission_id = rs.getString(3);
+                String permission_name = rs.getString(4);
+                String permission_description = rs.getString(5);
 
-        while (rs.next()) {
-            String rol_id = rs.getString(1);
-            String rol_name = rs.getString(2);
-            String permission_id = rs.getString(3);
-            String permission_name = rs.getString(4);
-            String permission_description = rs.getString(5);
+                Roles rol = map.get(rol_id);
+                if (rol == null) {
+                    rol = new Roles();
+                    rol.setRol_id(rol_id);
+                    rol.setRol_name(rol_name);  // o setRoleName según tu método
+                    rol.setPermissions(new LinkedList<>());
+                    map.put(rol_id, rol);
+                }
 
-            Roles rol = map.get(rol_id);
-            if (rol == null) {
-                rol = new Roles();
-                rol.setRol_id(rol_id);
-                rol.setRol_name(rol_name);  // o setRoleName según tu método
-                rol.setPermissions(new LinkedList<>());
-                map.put(rol_id, rol);
+                Permission p = new Permission();
+                p.setPermission_id(permission_id);
+                p.setPermission_name(permission_name);
+                p.setPermission_description(permission_description);
+
+                rol.getPermissions().add(p);
             }
 
-            Permission p = new Permission();
-            p.setPermission_id(permission_id);
-            p.setPermission_name(permission_name);
-            p.setPermission_description(permission_description);
+            list.addAll(map.values());
 
-            rol.getPermissions().add(p);
+        } catch (SQLException e) {
+            System.out.println("Error Test getAll: " + e.getMessage());
         }
-
-        list.addAll(map.values());
-
-    } catch (SQLException e) {
-        System.out.println("Error Test getAll: " + e.getMessage());
+        */
+        return list;
     }
-
-    return list;
-}
-
 
     @Override
     public void add(Roles R) {
-  try {
+        /*
+        try {
             R.setRol_id(UUID.randomUUID().toString());
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_add_role(?, ?)");
@@ -96,13 +94,14 @@ public LinkedList<Roles> getAll() {
 
         } catch (SQLException e) {
             System.out.println("Error Test add: " + e.getMessage());
-        }    
+        }
+    */
     }
 
     @Override
     public void update(Roles t) {
- try {
-            
+        /*try {
+
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_update_role(?, ?)");
             cs.setString(1, t.getRol_id());
@@ -129,12 +128,12 @@ public LinkedList<Roles> getAll() {
         } catch (SQLException e) {
             System.out.println("Error Test update: " + e.getMessage());
         }
- 
-     }
+        */
+    }
 
     @Override
     public void deleteById(String id) {
-       try {
+        try {
 
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_delete_role(?)");
@@ -150,8 +149,8 @@ public LinkedList<Roles> getAll() {
 
     @Override
     public Roles findById(String id) {
-    Roles rol = null;
-
+        Roles rol = null;
+        /*
         try {
 
             Connection cn = ConnectionDB.getConnection();
@@ -182,14 +181,14 @@ public LinkedList<Roles> getAll() {
         } catch (SQLException e) {
             System.out.println("Error Test findBYId: " + e.getMessage());
         }
-
+        */
         return rol;
     }
 
     @Override
     public LinkedList<Permission> getAllPermissions() {
-       LinkedList<Permission> list = new LinkedList<>();
-
+        LinkedList<Permission> list = new LinkedList<>();
+        /*
         try {
             Connection cn = ConnectionDB.getConnection();
             CallableStatement cs = cn.prepareCall("CALL sp_get_all_permissions()");
@@ -210,7 +209,7 @@ public LinkedList<Roles> getAll() {
         } catch (SQLException e) {
             System.out.println("Error Chracteristic getAll: " + e.getMessage());
         }
-
+        */
         return list;
     }
 }

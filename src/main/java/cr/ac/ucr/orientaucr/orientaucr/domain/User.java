@@ -1,123 +1,152 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
 
+@Entity
+@Table(name = "users")
 public class User {
-    private String user_id;
-    private String user_name;
-    private String user_lastname;
-    private String user_email;
-    private int user_phone_number;
-    private Date user_birthdate;
-    private String user_password;
-    private double user_admission_average;
-    private String user_profile_picture;
-    private boolean user_allow_email_notification;
-    private LinkedList<Roles> user_roles;
-    
+
+    @Id
+    @Column(name = "user_id", length = 36)
+    private String userId;
+
+    @Column(name = "user_name", nullable = false, length = 100)
+    private String userName;
+
+    @Column(name = "user_lastname", length = 100)
+    private String userLastname;
+
+    @Column(name = "user_email", nullable = false, unique = true, length = 255)
+    private String userEmail;
+
+    @Column(name = "user_birthdate")
+    @Temporal(TemporalType.DATE)
+    private Date userBirthdate;
+
+    @Column(name = "user_password", nullable = false, length = 255)
+    private String userPassword;
+
+    @Column(name = "user_admission_average", precision = 5, scale = 2)
+    private BigDecimal userAdmissionAverage;
+
+    @Column(name = "user_profile_picture", columnDefinition = "TEXT")
+    private String userProfilePicture;
+
+    @Column(name = "user_allow_email_notification")
+    private boolean userAllowEmailNotification;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private LinkedList<Roles> userRoles = new LinkedList<>();
+
     public User() {}
 
-    public User(String user_id, String user_name, String user_lastname, String user_email, int user_phone_number, Date user_birthdate, String user_password, double user_admission_average, String user_profile_picture, boolean user_allow_email_notification, LinkedList<Roles> user_roles) {
-        this.user_id = user_id;
-        this.user_name = user_name;
-        this.user_lastname = user_lastname;
-        this.user_email = user_email;
-        this.user_phone_number = user_phone_number;
-        this.user_birthdate = user_birthdate;
-        this.user_password = user_password;
-        this.user_admission_average = user_admission_average;
-        this.user_profile_picture = user_profile_picture;
-        this.user_allow_email_notification = user_allow_email_notification;
-        this.user_roles = user_roles;
+    public User(String userId, String userName, String userLastname, String userEmail, Date userBirthdate, String userPassword, BigDecimal userAdmissionAverage, String userProfilePicture, boolean userAllowEmailNotification) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userLastname = userLastname;
+        this.userEmail = userEmail;
+        this.userBirthdate = userBirthdate;
+        this.userPassword = userPassword;
+        this.userAdmissionAverage = userAdmissionAverage;
+        this.userProfilePicture = userProfilePicture;
+        this.userAllowEmailNotification = userAllowEmailNotification;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getUser_lastname() {
-        return user_lastname;
+    public String getUserLastname() {
+        return userLastname;
     }
 
-    public void setUser_lastname(String user_lastname) {
-        this.user_lastname = user_lastname;
+    public void setUserLastname(String userLastname) {
+        this.userLastname = userLastname;
     }
 
-    public String getUser_email() {
-        return user_email;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUser_email(String user_email) {
-        this.user_email = user_email;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
-    public int getUser_phone_number() {
-        return user_phone_number;
+    public Date getUserBirthdate() {
+        return userBirthdate;
     }
 
-    public void setUser_phone_number(int user_phone_number) {
-        this.user_phone_number = user_phone_number;
+    public void setUserBirthdate(Date userBirthdate) {
+        this.userBirthdate = userBirthdate;
     }
 
-    public Date getUser_birthdate() {
-        return user_birthdate;
+    public String getUserPassword() {
+        return userPassword;
     }
 
-    public void setUser_birthdate(Date user_birthdate) {
-        this.user_birthdate = user_birthdate;
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
     }
 
-    public String getUser_password() {
-        return user_password;
+    public BigDecimal getUserAdmissionAverage() {
+        return userAdmissionAverage;
     }
 
-    public void setUser_password(String user_password) {
-        this.user_password = user_password;
+    public void setUserAdmissionAverage(BigDecimal userAdmissionAverage) {
+        this.userAdmissionAverage = userAdmissionAverage;
     }
 
-    public double getUser_admission_average() {
-        return user_admission_average;
+    public String getUserProfilePicture() {
+        return userProfilePicture;
     }
 
-    public void setUser_admission_average(double user_admission_average) {
-        this.user_admission_average = user_admission_average;
+    public void setUserProfilePicture(String userProfilePicture) {
+        this.userProfilePicture = userProfilePicture;
     }
 
-    public String getUser_profile_picture() {
-        return user_profile_picture;
+    public boolean isUserAllowEmailNotification() {
+        return userAllowEmailNotification;
     }
 
-    public void setUser_profile_picture(String user_profile_picture) {
-        this.user_profile_picture = user_profile_picture;
+    public void setUserAllowEmailNotification(boolean userAllowEmailNotification) {
+        this.userAllowEmailNotification = userAllowEmailNotification;
     }
 
-    public boolean isUser_allow_email_notification() {
-        return user_allow_email_notification;
+    public LinkedList<Roles> getUserRoles() {
+        return userRoles;
     }
 
-    public void setUser_allow_email_notification(boolean user_allow_email_notification) {
-        this.user_allow_email_notification = user_allow_email_notification;
-    }
-
-    public LinkedList<Roles> getUser_roles() {
-        return user_roles;
-    }
-
-    public void setUser_roles(LinkedList<Roles> user_roles) {
-        this.user_roles = user_roles;
+    public void setUserRoles(LinkedList<Roles> userRoles) {
+        this.userRoles = userRoles;
     }
     
 }

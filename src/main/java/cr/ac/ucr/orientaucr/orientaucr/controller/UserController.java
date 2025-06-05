@@ -1,8 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
-import cr.ac.ucr.orientaucr.orientaucr.service.IUserService;
-import cr.ac.ucr.orientaucr.orientaucr.service.UserService;
+import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,19 +33,18 @@ public class UserController {
     private IUserService service;
     
     
-    private final UserService data = new UserService();
     private final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/jpg", "image/png");
 
     @RequestMapping("/list")
     @ResponseBody
     public ResponseEntity<LinkedList<User>> getAllUsers() {
-        return ResponseEntity.ok(data.getAllUsers());
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/users/search")
     public ResponseEntity<LinkedList<User>> searchUsers(@RequestParam("q") String search) {
         try {
-            LinkedList<User> users = data.searchUsers(search);
+            LinkedList<User> users = service.getAll(search);
 
             if (users.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -66,7 +64,7 @@ public class UserController {
                 //user.setUser_profile_picture(imagePath);
             }
 
-            data.addUser(user);
+            service.add(user);
             return ResponseEntity.ok("Usuario agregado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al agregar usuario: " + e.getMessage());
@@ -76,10 +74,10 @@ public class UserController {
     @PutMapping("/users/{userId}")
     public ResponseEntity<String> updateUser(@RequestPart("user") User updatedUser, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         try {
-            if (updatedUser.getUser_id() == null || updatedUser.getUser_id().trim().isEmpty()) {
+            if (updatedUser.getUserId()== null || updatedUser.getUserId().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("ID de usuario requerido.");
             }
-            User existingUser = data.findUserById(updatedUser.getUser_id());
+            User existingUser = service.findById(updatedUser.getUserId());
             if (existingUser == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
             }
@@ -88,10 +86,10 @@ public class UserController {
                 //String imagePath = imageService.saveImage(imageFile);
                 //updatedUser.setUser_profile_picture(imagePath);
             } else {
-                updatedUser.setUser_profile_picture(existingUser.getUser_profile_picture());
+                updatedUser.setUserProfilePicture(existingUser.getUserProfilePicture());
             }
 
-            data.updateUser(updatedUser);
+            service.update(updatedUser);
             return ResponseEntity.ok("Usuario actualizado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar usuario: " + e.getMessage());
@@ -105,7 +103,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body("ID de usuario requerido.");
             }
 
-            data.deleteUser(userId);
+            service.deleteById(userId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Usuario eliminado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el usuario: " + e.getMessage());
@@ -119,7 +117,7 @@ public class UserController {
                 return ResponseEntity.badRequest().build();
             }
 
-            User user = data.getUserById(userId);
+            User user = service.findById(userId);
 
             if (user != null) {
                 return ResponseEntity.ok(user);
@@ -134,13 +132,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<User> loginUser(@RequestBody User credentials) {
         try {
-            if (credentials.getUser_email() == null || credentials.getUser_password() == null) {
+            if (credentials.getUserEmail() == null || credentials.getUserPassword() == null) {
                 return ResponseEntity.badRequest().build();
             }
 
-            User user = data.authenticateUser(
-                    credentials.getUser_email(),
-                    credentials.getUser_password()
+            User user = service.authenticateUser(
+                    credentials.getUserEmail(),
+                    credentials.getUserPassword()
             );
 
             if (user != null) {

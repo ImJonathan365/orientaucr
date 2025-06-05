@@ -1,7 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
-import cr.ac.ucr.orientaucr.orientaucr.service.CareerService;
+import cr.ac.ucr.orientaucr.orientaucr.services.CareerService;
 import java.util.LinkedList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

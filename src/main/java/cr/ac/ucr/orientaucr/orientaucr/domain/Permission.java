@@ -1,41 +1,67 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import java.util.LinkedList;
+
+@Entity
+@Table(name = "permissions")
 public class Permission {
 
-    private String permission_id;
-    private String permission_name;
-    private String permission_description;
+    @Id
+    @Column(name = "permission_id", length = 36)
+    private String permissionId;
+
+    @Column(name = "permission_name", nullable = false, unique = true, length = 100)
+    private String permissionName;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String permissionDescription;
+
+    @ManyToMany(mappedBy = "permissions")
+    private LinkedList<Roles> roles = new LinkedList<>();
 
     public Permission() {}
 
-    public Permission(String permission_id, String permission_name, String permission_description) {
-        this.permission_id = permission_id;
-        this.permission_name = permission_name;
-        this.permission_description = permission_description;
+    public Permission(String permissionId, String permissionName, String permissionDescription) {
+        this.permissionId = permissionId;
+        this.permissionName = permissionName;
+        this.permissionDescription = permissionDescription;
     }
 
-    public String getPermission_id() {
-        return permission_id;
+    public String getPermissionId() {
+        return permissionId;
     }
 
-    public void setPermission_id(String permission_id) {
-        this.permission_id = permission_id;
+    public void setPermissionId(String permissionId) {
+        this.permissionId = permissionId;
     }
 
-    public String getPermission_name() {
-        return permission_name;
+    public String getPermissionName() {
+        return permissionName;
     }
 
-    public void setPermission_name(String permission_name) {
-        this.permission_name = permission_name;
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
     }
 
-    public String getPermission_description() {
-        return permission_description;
+    public String getPermissionDescription() {
+        return permissionDescription;
     }
 
-    public void setPermission_description(String permission_description) {
-        this.permission_description = permission_description;
+    public void setPermissionDescription(String permissionDescription) {
+        this.permissionDescription = permissionDescription;
+    }
+
+    public LinkedList<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(LinkedList<Roles> roles) {
+        this.roles = roles;
     }
 
 }
