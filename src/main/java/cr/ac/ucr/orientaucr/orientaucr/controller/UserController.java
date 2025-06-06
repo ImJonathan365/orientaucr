@@ -135,7 +135,7 @@ public class UserController {
             if (credentials.getUserEmail() == null || credentials.getUserPassword() == null) {
                 return ResponseEntity.badRequest().build();
             }
-
+            
             User user = service.authenticateUser(
                     credentials.getUserEmail(),
                     credentials.getUserPassword()
