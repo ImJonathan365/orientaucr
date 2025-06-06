@@ -1,14 +1,8 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import java.util.LinkedList;
+import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "roles")
@@ -27,10 +21,7 @@ public class Roles {
         joinColumns = @JoinColumn(name = "rol_id"),
         inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private LinkedList<Permission> permissions = new LinkedList<>();
-
-    @ManyToMany(mappedBy = "userRoles")
-    private LinkedList<User> users = new LinkedList<>();
+    private List<Permission> permissions = new ArrayList<>();
 
     public Roles() {}
 
@@ -39,6 +30,7 @@ public class Roles {
         this.rolName = rolName;
     }
 
+    // Getters and setters...
     public String getRolId() {
         return rolId;
     }
@@ -55,20 +47,11 @@ public class Roles {
         this.rolName = rolName;
     }
 
-    public LinkedList<Permission> getPermissions() {
+    public List<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(LinkedList<Permission> permissions) {
+    public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
-
-    public LinkedList<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(LinkedList<User> users) {
-        this.users = users;
-    }
-    
 }

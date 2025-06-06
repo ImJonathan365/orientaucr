@@ -1,11 +1,9 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import java.util.LinkedList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "permissions")
@@ -22,7 +20,8 @@ public class Permission {
     private String permissionDescription;
 
     @ManyToMany(mappedBy = "permissions")
-    private LinkedList<Roles> roles = new LinkedList<>();
+    @JsonIgnore
+    private List<Roles> roles = new ArrayList<>();
 
     public Permission() {}
 
@@ -32,6 +31,7 @@ public class Permission {
         this.permissionDescription = permissionDescription;
     }
 
+    // Getters and setters...
     public String getPermissionId() {
         return permissionId;
     }
@@ -56,12 +56,11 @@ public class Permission {
         this.permissionDescription = permissionDescription;
     }
 
-    public LinkedList<Roles> getRoles() {
+    public List<Roles> getRoles() {
         return roles;
     }
 
-    public void setRoles(LinkedList<Roles> roles) {
+    public void setRoles(List<Roles> roles) {
         this.roles = roles;
     }
-
 }

@@ -24,14 +24,21 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/user/login").permitAll()
-                .anyRequest().authenticated()
-            )
-            .build();
-    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                // Endpoints públicos
+                "/api/user/login",
+                "/api/roles/**",          // Todos los endpoints de roles
+                "/api/permissions/**",    // Si tienes endpoints de permisos
+                "/swagger-ui/**",         // Si usas Swagger
+                "/v3/api-docs/**"        // Documentación OpenAPI
+            ).permitAll()
+            .anyRequest().authenticated() // El resto requiere autenticación
+        )
+        .build();
+}
 }
