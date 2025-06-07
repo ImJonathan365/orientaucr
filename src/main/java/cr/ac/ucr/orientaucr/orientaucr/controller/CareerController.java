@@ -2,14 +2,12 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
-import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +32,7 @@ public class CareerController {
     // Nuevo endpoint para API REST
     @RequestMapping("/list")
     @ResponseBody
-    public ResponseEntity<LinkedList<Career>> getAllCareers() {
+    public ResponseEntity<List<Career>> getAllCareers() {
         return ResponseEntity.ok(careerService.getAll());
     }
 

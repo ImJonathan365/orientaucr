@@ -3,18 +3,18 @@ package cr.ac.ucr.orientaucr.orientaucr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="characteristics")
+@Table(name = "characteristics")
 public class Characteristic {
-    
+
     @Id
     @Column(name = "characteristics_id", length = 36)
     private String characteristics_id;
@@ -26,7 +26,12 @@ public class Characteristic {
     @JsonIgnore
     private Set<Career> careers = new HashSet<>();
 
-    public Characteristic() {}
+    @ManyToMany(mappedBy = "characteristics")
+    @JsonIgnore
+    private List<Test> tests = new ArrayList<>();
+
+    public Characteristic() {
+    }
 
     public Characteristic(String characteristics_id, String characteristics_name, String characteristics_description) {
         this.characteristics_id = characteristics_id;
@@ -66,6 +71,4 @@ public class Characteristic {
         this.careers = careers;
     }
 
-    
-    
 }

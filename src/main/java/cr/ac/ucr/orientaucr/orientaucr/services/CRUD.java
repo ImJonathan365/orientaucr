@@ -1,11 +1,11 @@
 package cr.ac.ucr.orientaucr.orientaucr.services;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public interface CRUD<T> {
-    LinkedList<T> getAll(String search);
+    List<T> getAll(String search);
 
-    LinkedList<T> getAll();
+    List<T> getAll();
 
     void add(T t);
 

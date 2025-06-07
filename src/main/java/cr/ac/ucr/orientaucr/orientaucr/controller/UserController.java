@@ -37,14 +37,14 @@ public class UserController {
 
     @RequestMapping("/list")
     @ResponseBody
-    public ResponseEntity<LinkedList<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/users/search")
-    public ResponseEntity<LinkedList<User>> searchUsers(@RequestParam("q") String search) {
+    public ResponseEntity<List<User>> searchUsers(@RequestParam("q") String search) {
         try {
-            LinkedList<User> users = service.getAll(search);
+            List<User> users = service.getAll(search);
 
             if (users.isEmpty()) {
                 return ResponseEntity.noContent().build();

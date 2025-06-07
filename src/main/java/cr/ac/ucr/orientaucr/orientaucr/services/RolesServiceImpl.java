@@ -3,8 +3,6 @@ package cr.ac.ucr.orientaucr.orientaucr.services;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository;
-import cr.ac.ucr.orientaucr.orientaucr.repository.RolesRepository;
-import cr.ac.ucr.orientaucr.orientaucr.repository.PermissionRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.lRolesService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +10,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import cr.ac.ucr.orientaucr.orientaucr.repository.IPermissionRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.IRolesRepository;
 
 @Service
 public class RolesServiceImpl implements lRolesService {
 
-    private final RolesRepository rolesRepository;
-    private final PermissionRepository permissionRepository;
+    private final IRolesRepository rolesRepository;
+    private final IPermissionRepository permissionRepository;
     private final CustomRolesRepository customRepository;
 
     @Autowired
-    public RolesServiceImpl(RolesRepository rolesRepository, PermissionRepository permissionRepository, cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository customRepository) {
+    public RolesServiceImpl(IRolesRepository rolesRepository, IPermissionRepository permissionRepository, cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository customRepository) {
         this.rolesRepository = rolesRepository;
         this.permissionRepository = permissionRepository;
         this.customRepository = customRepository;
