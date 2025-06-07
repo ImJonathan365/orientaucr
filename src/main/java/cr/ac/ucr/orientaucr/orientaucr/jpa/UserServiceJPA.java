@@ -5,7 +5,6 @@ import cr.ac.ucr.orientaucr.orientaucr.repository.IUserRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.sql.Types;
 import java.util.LinkedList;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;

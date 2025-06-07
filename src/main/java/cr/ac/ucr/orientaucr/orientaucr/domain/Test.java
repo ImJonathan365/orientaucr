@@ -1,44 +1,59 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
+@Table(name = "vocational_question")
 public class Test {
-    
-    private String question_id;
-    private String question_text;
-    private LinkedList<Characteristic> characteristics;
+
+    @Id
+    @Column(name = "question_id", length = 36)
+    private String questionId;
+
+    @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
+    private String questionText;
+
+    @ManyToMany
+    @JoinTable(
+        name = "characteristics_question",
+        joinColumns = @JoinColumn(name = "question_id"),
+        inverseJoinColumns = @JoinColumn(name = "characteristics_id")
+    )
+    @JsonIgnoreProperties("tests")
+    private List<Characteristic> characteristics = new LinkedList<>();
 
     public Test() {}
 
-    public Test(String question_id, String question_text, LinkedList<Characteristic> characteristics) {
-        this.question_id = question_id;
-        this.question_text = question_text;
+    public Test(String questionId, String questionText, List<Characteristic> characteristics) {
+        this.questionId = questionId;
+        this.questionText = questionText;
         this.characteristics = characteristics;
     }
 
-    public String getQuestion_id() {
-        return question_id;
+    public String getQuestionId() {
+        return questionId;
     }
 
-    public void setQuestion_id(String question_id) {
-        this.question_id = question_id;
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
-    public String getQuestion_text() {
-        return question_text;
+    public String getQuestionText() {
+        return questionText;
     }
 
-    public void setQuestion_text(String question_text) {
-        this.question_text = question_text;
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
     }
 
-    public LinkedList<Characteristic> getCharacteristics() {
+    public List<Characteristic> getCharacteristics() {
         return characteristics;
     }
 
-    public void setCharacteristics(LinkedList<Characteristic> characteristics) {
+    public void setCharacteristics(List<Characteristic> characteristics) {
         this.characteristics = characteristics;
     }
-    
 }

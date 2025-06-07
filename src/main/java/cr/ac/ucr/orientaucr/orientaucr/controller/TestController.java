@@ -1,8 +1,9 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Test;
-import cr.ac.ucr.orientaucr.orientaucr.services.TestService;
-import java.util.LinkedList;
+import cr.ac.ucr.orientaucr.orientaucr.services.ITestService;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,16 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test")
 public class TestController {
     
-    private final TestService service = new TestService();
+    @Autowired
+    private ITestService service;
 
     @GetMapping("/all")
-    public LinkedList<Test> getAll() {
-        return service.getAllTest();
+    public List<Test> getAll() {
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Test> getById(@PathVariable String id) {
-        Test test = service.findTestById(id);
+        Test test = service.findById(id);
         if (test != null) {
             return ResponseEntity.ok(test);
         } else {
@@ -36,19 +38,19 @@ public class TestController {
 
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody Test test) {
-        service.addTest(test);
+        service.add(test);
         return ResponseEntity.ok("Pregunta agregada correctamente.");
     }
 
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody Test test) {
-        service.updateTest(test);
+        service.update(test);
         return ResponseEntity.ok("Pregunta actualizada correctamente.");
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
-        service.deleteTestById(id);
+        service.deleteById(id);
         return ResponseEntity.ok("Pregunta eliminada correctamente.");
     }
     

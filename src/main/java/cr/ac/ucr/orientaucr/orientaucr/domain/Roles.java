@@ -1,5 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -21,8 +23,13 @@ public class Roles {
         joinColumns = @JoinColumn(name = "rol_id"),
         inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
+    @JsonIgnoreProperties("roles")
     private List<Permission> permissions = new ArrayList<>();
-
+    
+    @ManyToMany(mappedBy = "userRoles")
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
+    
     public Roles() {}
 
     public Roles(String rolId, String rolName) {
@@ -30,7 +37,6 @@ public class Roles {
         this.rolName = rolName;
     }
 
-    // Getters and setters...
     public String getRolId() {
         return rolId;
     }
@@ -54,4 +60,13 @@ public class Roles {
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+    
 }

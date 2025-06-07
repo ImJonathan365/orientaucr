@@ -4,7 +4,6 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICareerRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICharacteristicRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +20,13 @@ public class CareerServiceJPA implements ICareerService {
     private ICharacteristicRepository characteristicRepo;
 
     @Override
-    public LinkedList<Career> getAll(String search) {
+    public List<Career> getAll(String search) {
         return null;
     }
 
     @Override
-    public LinkedList<Career> getAll() {
-        return new LinkedList<>(careerRepo.findAll());
+    public List<Career> getAll() {
+        return careerRepo.findAll();
     }
 
     @Override
