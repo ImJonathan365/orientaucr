@@ -32,6 +32,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(
                 // Endpoints públicos
                 "/api/user/login",
+                "/api/career/**",
                 "/api/roles/**",          // Todos los endpoints de roles
                 "/api/permissions/**",    // Si tienes endpoints de permisos
                 "/swagger-ui/**",         // Si usas Swagger

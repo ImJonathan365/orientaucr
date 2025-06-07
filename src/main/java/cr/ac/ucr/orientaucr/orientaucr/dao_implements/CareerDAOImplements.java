@@ -56,7 +56,7 @@ public class CareerDAOImplements implements CareerDAO {
                     career.setCareer_name(career_name);
                     career.setCareer_description(career_description);
                     career.setCareer_duration_years(career_duration_years);
-                    career.setCharacteristicList(new LinkedList<>());
+                    //career.setCharacteristicList(new LinkedList<>());
                     map.put(career_id, career);
                 }
 
@@ -66,7 +66,7 @@ public class CareerDAOImplements implements CareerDAO {
                     characteristic.setCharacteristics_name(characteristics_name);
                     characteristic.setCharacteristics_description(characteristics_description);
 
-                    career.getCharacteristicList().add(characteristic);
+                    //career.getCharacteristicList().add(characteristic);
                 }
             }
             listCareer.addAll(map.values());
@@ -155,7 +155,7 @@ public class CareerDAOImplements implements CareerDAO {
                 career.setCareer_name(rs.getString("career_name"));
                 career.setCareer_description(rs.getString("career_description"));
                 career.setCareer_duration_years(rs.getInt("career_duration_years"));
-                career.setCharacteristicList(new LinkedList<>());
+                //career.setCharacteristicList(new LinkedList<>());
 
                 // Procesar primera fila (si tiene características)
                 if (rs.getString(5) != null) {
@@ -163,7 +163,7 @@ public class CareerDAOImplements implements CareerDAO {
                     characteristic.setCharacteristics_id(rs.getString("characteristics_id"));
                     characteristic.setCharacteristics_name(rs.getString("characteristics_name"));
                     characteristic.setCharacteristics_description(rs.getString("characteristics_description"));
-                    career.getCharacteristicList().add(characteristic);
+                    //career.getCharacteristicList().add(characteristic);
                 }
 
                 // Procesar filas adicionales (si existen)
@@ -172,7 +172,7 @@ public class CareerDAOImplements implements CareerDAO {
                     characteristic.setCharacteristics_id(rs.getString("characteristics_id"));
                     characteristic.setCharacteristics_name(rs.getString("characteristics_name"));
                     characteristic.setCharacteristics_description(rs.getString("characteristics_description"));
-                    career.getCharacteristicList().add(characteristic);
+                    //career.getCharacteristicList().add(characteristic);
                 }
             }
         } catch (SQLException ex) {

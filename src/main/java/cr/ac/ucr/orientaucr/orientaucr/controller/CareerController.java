@@ -1,8 +1,10 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
-import cr.ac.ucr.orientaucr.orientaucr.services.CareerService;
+import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
 import java.util.LinkedList;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,9 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/api/career")
 public class CareerController {
 
+    @Autowired
+    private ICareerService careerService;
+    
     @GetMapping("/listCareers")
     public String page(Model model) {
-        model.addAttribute("career", CareerService.getAllCareers());
+        model.addAttribute("career", careerService.getAll());
         return "careers/listCareers";
     }
 
@@ -30,25 +35,25 @@ public class CareerController {
     @RequestMapping("/list")
     @ResponseBody
     public ResponseEntity<LinkedList<Career>> getAllCareers() {
-        return ResponseEntity.ok(CareerService.getAllCareers());
+        return ResponseEntity.ok(careerService.getAll());
     }
 
     @PostMapping("/add")
     public ResponseEntity<Void> addCareer(@RequestBody Career career) {
-        CareerService.addCareer(career);
+        careerService.add(career);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/update")
     public ResponseEntity<Void> updateCareer(@RequestBody Career career) {
-        CareerService.updateCareer(career);
+        careerService.update(career);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/delete/{career_id}")
     public ResponseEntity<Void> deleteCareer(@PathVariable("career_id") String careerId) {
         try {
-            CareerService.deleteCareer(careerId);
+            careerService.deleteById(careerId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -58,7 +63,7 @@ public class CareerController {
     @GetMapping("/searchCareer/{career_id}")
     public ResponseEntity<Career> getCareerById(@PathVariable("career_id") String careerId) {
         try {
-            Career career = CareerService.findByIdCareer(careerId);
+            Career career = careerService.findById(careerId);
             
             if (career != null) {
                 return ResponseEntity.ok(career);
