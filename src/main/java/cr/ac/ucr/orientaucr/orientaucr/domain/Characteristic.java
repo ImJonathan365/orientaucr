@@ -1,10 +1,30 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name="characteristics")
 public class Characteristic {
     
+    @Id
+    @Column(name = "characteristics_id", length = 36)
     private String characteristics_id;
+    @Column(name = "characteristics_name", nullable = false, length = 100)
     private String characteristics_name;
+    @Column(name = "characteristics_description", columnDefinition = "TEXT")
     private String characteristics_description;
+    @ManyToMany(mappedBy = "characteristics")
+    @JsonIgnore
+    private Set<Career> careers = new HashSet<>();
 
     public Characteristic() {}
 
@@ -37,5 +57,15 @@ public class Characteristic {
     public void setCharacteristics_description(String characteristics_description) {
         this.characteristics_description = characteristics_description;
     }
+
+    public Set<Career> getCareers() {
+        return careers;
+    }
+
+    public void setCareers(Set<Career> careers) {
+        this.careers = careers;
+    }
+
+    
     
 }
