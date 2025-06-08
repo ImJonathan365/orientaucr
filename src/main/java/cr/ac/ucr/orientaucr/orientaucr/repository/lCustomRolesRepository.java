@@ -3,7 +3,7 @@ package cr.ac.ucr.orientaucr.orientaucr.repository;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import java.util.List;
 
-public interface CustomRolesRepository {
+public interface lCustomRolesRepository {
     List<Roles> getAll();
     void assignPermissionToRole(String roleId, String permissionId);
     void deletePermissionsFromRole(String roleId);
