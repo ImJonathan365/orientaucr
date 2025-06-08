@@ -1,6 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class SimulationOption {
     private String optionText;
 
     @Column(name = "is_correct")
+    @JsonProperty("isCorrect")
     private boolean isCorrect;
 
     @ManyToOne
@@ -22,8 +24,7 @@ public class SimulationOption {
     @JsonBackReference
     private SimulationQuestion question;
 
-    // Getters y Setters
-
+ 
     public String getOptionId() {
         return optionId;
     }

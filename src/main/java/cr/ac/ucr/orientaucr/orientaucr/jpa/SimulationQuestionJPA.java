@@ -31,6 +31,19 @@ public class SimulationQuestionJPA implements ISimulationQuestionService {
     @Override
     @Transactional
     public void add(SimulationQuestion question) {
+        // DEPURACIÓN: Imprime la pregunta y las opciones recibidas
+        System.out.println("==== DEPURACIÓN - Creando pregunta ====");
+        System.out.println("Pregunta recibida: " + question.getQuestionText());
+        System.out.println("Categoría recibida: " + question.getQuestionCategory());
+        if (question.getOptions() != null) {
+            for (SimulationOption option : question.getOptions()) {
+                System.out.println("Opción: " + option.getOptionText() + " | isCorrect: " + option.isCorrect());
+            }
+        } else {
+            System.out.println("Opciones recibidas: null");
+        }
+        System.out.println("=======================================");
+
         if (question.getQuestionId() == null || question.getQuestionId().isEmpty()) {
             question.setQuestionId(UUID.randomUUID().toString());
         }
@@ -66,6 +79,8 @@ public class SimulationQuestionJPA implements ISimulationQuestionService {
                 .orElseThrow(() -> new RuntimeException("Pregunta no encontrada con id: " + question.getQuestionId()));
 
         existing.setQuestionText(question.getQuestionText());
+        existing.setQuestionCategory(question.getQuestionCategory()); // <-- Agrega esta línea
+
         existing.getOptions().clear();
 
         List<SimulationOption> newOptions = question.getOptions();
