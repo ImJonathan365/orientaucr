@@ -1,7 +1,9 @@
-package cr.ac.ucr.orientaucr.orientaucr.repository;
+package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
+import cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
@@ -13,24 +15,20 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomRolesRepositoryImpl implements CustomRolesRepository {
+public class CustomRolesServiceJPA implements CustomRolesRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public List<Roles> getAllRolesWithPermissions() {
-        StoredProcedureQuery query = entityManager
-                .createStoredProcedureQuery("sp_get_roles_permissions")
-                .registerStoredProcedureParameter(1, void.class, ParameterMode.REF_CURSOR);
+ @Override
+public List<Roles> getAll() {
+    @SuppressWarnings("unchecked")
+    List<Object[]> results = entityManager
+            .createNativeQuery("CALL sp_get_roles_permissions()")
+            .getResultList();
 
-        query.execute();
-
-        List<Object[]> results = query.getResultList();
-        // Map results to Roles objects
-        // This would be similar to your previous DAO implementation
-        return mapResultsToRoles(results);
-    }
+    return mapResultsToRoles(results);
+}
 
     @Override
     public void updateRole(String roleId, String roleName) {
@@ -43,22 +41,6 @@ public class CustomRolesRepositoryImpl implements CustomRolesRepository {
         query.setParameter(2, roleName);
         query.execute();
     }
-
-    @Override
-    public Roles getRoleWithPermissionsById(String id) {
-        StoredProcedureQuery query = entityManager
-                .createStoredProcedureQuery("sp_get_role_by_id")
-                .registerStoredProcedureParameter(1, String.class, ParameterMode.IN)
-                .registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
-
-        query.setParameter(1, id);
-        query.execute();
-
-        List<Object[]> results = query.getResultList();
-        // Map results to a single Roles object
-        return mapResultsToSingleRole(results);
-    }
-
     @Override
     public void assignPermissionToRole(String roleId, String permissionId) {
         StoredProcedureQuery query = entityManager
@@ -111,6 +93,19 @@ public class CustomRolesRepositoryImpl implements CustomRolesRepository {
         return new LinkedList<>(rolesMap.values());
     }
 
+    @Override
+    public void addRole(String roleId, String roleName) {
+        StoredProcedureQuery query = entityManager
+                .createStoredProcedureQuery("sp_add_role")
+                .registerStoredProcedureParameter(1, String.class, ParameterMode.IN)
+                .registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+
+        query.setParameter(1, roleId);
+        query.setParameter(2, roleName);
+        query.execute();
+    }
+     
+
     private Roles mapResultsToSingleRole(List<Object[]> results) {
         Roles role = null;
 
@@ -139,15 +134,4 @@ public class CustomRolesRepositoryImpl implements CustomRolesRepository {
         return role;
     }
 
-    @Override
-    public void addRole(String roleId, String roleName) {
-        StoredProcedureQuery query = entityManager
-                .createStoredProcedureQuery("sp_add_role")
-                .registerStoredProcedureParameter(1, String.class, ParameterMode.IN)
-                .registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
-
-        query.setParameter(1, roleId);
-        query.setParameter(2, roleName);
-        query.execute();
-    }
 }
