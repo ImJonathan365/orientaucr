@@ -30,15 +30,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
-                // Endpoints públicos
                 "/api/user/login",
                 "/api/career/**",
-                "/api/roles/**",          // Todos los endpoints de roles
-                "/api/permissions/**",    // Si tienes endpoints de permisos
-                "/swagger-ui/**",         // Si usas Swagger
-                "/v3/api-docs/**"        // Documentación OpenAPI
+                "/api/questions",
+                "/api/questions/**",
+                "/api/roles/**",
+                "/api/permissions/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**"
             ).permitAll()
-            .anyRequest().authenticated() // El resto requiere autenticación
+            .anyRequest().authenticated()
         )
         .build();
 }
