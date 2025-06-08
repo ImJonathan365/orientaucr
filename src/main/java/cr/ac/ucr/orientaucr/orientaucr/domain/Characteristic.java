@@ -18,10 +18,13 @@ public class Characteristic {
     @Id
     @Column(name = "characteristics_id", length = 36)
     private String characteristics_id;
+    
     @Column(name = "characteristics_name", nullable = false, length = 100)
     private String characteristics_name;
+    
     @Column(name = "characteristics_description", columnDefinition = "TEXT")
     private String characteristics_description;
+    
     @ManyToMany(mappedBy = "characteristics")
     @JsonIgnore
     private Set<Career> careers = new HashSet<>();

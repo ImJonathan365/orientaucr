@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,16 +32,17 @@ public class UserController {
 
     @Autowired
     private IUserService service;
-    
-    
+
     private final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/jpg", "image/png");
 
+    @PreAuthorize("hasAuthority('VER USUARIOS')")
     @RequestMapping("/list")
     @ResponseBody
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @PreAuthorize("hasAuthority('VER USUARIOS')")
     @GetMapping("/users/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam("q") String search) {
         try {
@@ -56,6 +58,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CREAR USUARIOS')")
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestPart("user") User user, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         try {
@@ -71,10 +74,11 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MODIFICAR USUARIOS') or hasAuthority('EDITAR PERFIL')")
     @PutMapping("/users/{userId}")
     public ResponseEntity<String> updateUser(@RequestPart("user") User updatedUser, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         try {
-            if (updatedUser.getUserId()== null || updatedUser.getUserId().trim().isEmpty()) {
+            if (updatedUser.getUserId() == null || updatedUser.getUserId().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("ID de usuario requerido.");
             }
             User existingUser = service.findById(updatedUser.getUserId());
@@ -96,6 +100,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR USUARIOS')")
     @DeleteMapping("/delete/{user_id}")
     public ResponseEntity<String> deleteUser(@PathVariable("user_id") String userId) {
         try {
@@ -110,6 +115,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VER USUARIO')")
     @GetMapping("/search/{user_id}")
     public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
         try {
@@ -135,7 +141,7 @@ public class UserController {
             if (credentials.getUserEmail() == null || credentials.getUserPassword() == null) {
                 return ResponseEntity.badRequest().build();
             }
-            
+
             User user = service.authenticateUser(
                     credentials.getUserEmail(),
                     credentials.getUserPassword()
