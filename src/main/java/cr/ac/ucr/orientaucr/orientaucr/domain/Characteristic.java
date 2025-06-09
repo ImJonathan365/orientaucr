@@ -22,6 +22,7 @@ public class Characteristic {
     private String characteristicsName;
     @Column(name = "characteristics_description", columnDefinition = "TEXT")
     private String characteristicsDescription;
+
     @ManyToMany(mappedBy = "characteristics")
     @JsonIgnore
     private Set<Career> careers = new HashSet<>();

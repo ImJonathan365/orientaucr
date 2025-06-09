@@ -22,12 +22,12 @@ public class RolesController {
 
     @GetMapping("/all")
     public LinkedList<Roles> getAll() {
-        return new LinkedList<>(service.getAllRoles());
+        return new LinkedList<>(service.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Roles> getById(@PathVariable String id) {
-        Roles rol = service.getRoleById(id);
+        Roles rol = service.findById(id);
         if (rol != null) {
             return ResponseEntity.ok(rol);
         } else {
@@ -38,7 +38,7 @@ public class RolesController {
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody Roles rol) {
         try {
-           service.createRole(rol);
+           service.add(rol);
             return ResponseEntity.ok("Agregado correctamente"); // Devuelve el rol creado con sus datos
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -49,7 +49,7 @@ public class RolesController {
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Roles rol) {
         try {
-            service.updateRoleWithPermissions(rol);
+            service.update(rol);
             return ResponseEntity.ok("Rol actualizado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -59,7 +59,7 @@ public class RolesController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
-        service.deleteRole(id);
+        service.deleteById(id);
         return ResponseEntity.ok("Rol eliminado correctamente.");
     }
 
@@ -68,26 +68,4 @@ public class RolesController {
         return new LinkedList<>(service.getAllPermissions());
     }
 
-    // Nuevos endpoints para manejar permisos (si los necesitas)
-    @GetMapping("/{id}/withPermissions")
-    public ResponseEntity<Roles> getRoleWithPermissions(@PathVariable String id) {
-        Roles role = service.getRoleWithPermissions(id);
-        return role != null
-                ? ResponseEntity.ok(role)
-                : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/{roleId}/assignPermission/{permissionId}")
-    public ResponseEntity<String> assignPermission(
-            @PathVariable String roleId,
-            @PathVariable String permissionId) {
-        service.assignPermissionToRole(roleId, permissionId);
-        return ResponseEntity.ok("Permiso asignado correctamente.");
-    }
-
-    @DeleteMapping("/{roleId}/clearPermissions")
-    public ResponseEntity<String> clearPermissions(@PathVariable String roleId) {
-        service.deletePermissionsFromRole(roleId);
-        return ResponseEntity.ok("Permisos eliminados correctamente.");
-    }
 }
