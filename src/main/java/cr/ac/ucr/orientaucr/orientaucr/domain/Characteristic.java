@@ -17,11 +17,11 @@ public class Characteristic {
 
     @Id
     @Column(name = "characteristics_id", length = 36)
-    private String characteristics_id;
+    private String characteristicsId;
     @Column(name = "characteristics_name", nullable = false, length = 100)
-    private String characteristics_name;
+    private String characteristicsName;
     @Column(name = "characteristics_description", columnDefinition = "TEXT")
-    private String characteristics_description;
+    private String characteristicsDescription;
     @ManyToMany(mappedBy = "characteristics")
     @JsonIgnore
     private Set<Career> careers = new HashSet<>();
@@ -33,34 +33,34 @@ public class Characteristic {
     public Characteristic() {
     }
 
-    public Characteristic(String characteristics_id, String characteristics_name, String characteristics_description) {
-        this.characteristics_id = characteristics_id;
-        this.characteristics_name = characteristics_name;
-        this.characteristics_description = characteristics_description;
+    public Characteristic(String characteristicsId, String characteristicsName, String characteristicsDescription) {
+        this.characteristicsId = characteristicsId;
+        this.characteristicsName = characteristicsName;
+        this.characteristicsDescription = characteristicsDescription;
     }
 
-    public String getCharacteristics_id() {
-        return characteristics_id;
+    public String getCharacteristicsId() {
+        return characteristicsId;
     }
 
-    public void setCharacteristics_id(String characteristics_id) {
-        this.characteristics_id = characteristics_id;
+    public void setCharacteristicsId(String characteristicsId) {
+        this.characteristicsId = characteristicsId;
     }
 
-    public String getCharacteristics_name() {
-        return characteristics_name;
+    public String getCharacteristicsName() {
+        return characteristicsName;
     }
 
-    public void setCharacteristics_name(String characteristics_name) {
-        this.characteristics_name = characteristics_name;
+    public void setCharacteristicsName(String characteristicsName) {
+        this.characteristicsName = characteristicsName;
     }
 
-    public String getCharacteristics_description() {
-        return characteristics_description;
+    public String getCharacteristicsDescription() {
+        return characteristicsDescription;
     }
 
-    public void setCharacteristics_description(String characteristics_description) {
-        this.characteristics_description = characteristics_description;
+    public void setCharacteristicsDescription(String characteristicsDescription) {
+        this.characteristicsDescription = characteristicsDescription;
     }
 
     public Set<Career> getCareers() {
@@ -70,5 +70,15 @@ public class Characteristic {
     public void setCareers(Set<Career> careers) {
         this.careers = careers;
     }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
+
+    
 
 }
