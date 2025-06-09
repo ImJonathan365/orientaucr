@@ -46,9 +46,9 @@ public class TestServiceJPA implements ITestService {
             }
 
             Characteristic characteristic = new Characteristic();
-            characteristic.setCharacteristics_id(charId);
-            characteristic.setCharacteristics_name(charName);
-            characteristic.setCharacteristics_description(charDesc);
+            characteristic.setCharacteristicsId(charId);
+            characteristic.setCharacteristicsName(charName);
+            characteristic.setCharacteristicsDescription(charDesc);
             test.getCharacteristics().add(characteristic);
         }
 
@@ -80,9 +80,9 @@ public class TestServiceJPA implements ITestService {
             }
 
             Characteristic characteristic = new Characteristic();
-            characteristic.setCharacteristics_id(charId);
-            characteristic.setCharacteristics_name(charName);
-            characteristic.setCharacteristics_description(charDesc);
+            characteristic.setCharacteristicsId(charId);
+            characteristic.setCharacteristicsName(charName);
+            characteristic.setCharacteristicsDescription(charDesc);
 
             test.getCharacteristics().add(characteristic);
         }
@@ -106,7 +106,7 @@ public class TestServiceJPA implements ITestService {
                     .registerStoredProcedureParameter("p_question_id", String.class, ParameterMode.IN)
                     .registerStoredProcedureParameter("p_characteristics_id", String.class, ParameterMode.IN)
                     .setParameter("p_question_id", t.getQuestionId())
-                    .setParameter("p_characteristics_id", ch.getCharacteristics_id());
+                    .setParameter("p_characteristics_id", ch.getCharacteristicsId());
             chQuery.execute();
         }
     }
@@ -133,7 +133,7 @@ public class TestServiceJPA implements ITestService {
                     .registerStoredProcedureParameter("p_question_id", String.class, ParameterMode.IN)
                     .registerStoredProcedureParameter("p_characteristics_id", String.class, ParameterMode.IN)
                     .setParameter("p_question_id", t.getQuestionId())
-                    .setParameter("p_characteristics_id", ch.getCharacteristics_id());
+                    .setParameter("p_characteristics_id", ch.getCharacteristicsId());
             chQuery.execute();
         }
     }
@@ -168,9 +168,9 @@ public class TestServiceJPA implements ITestService {
             test.setQuestionText((String) row[1]);
 
             Characteristic ch = new Characteristic();
-            ch.setCharacteristics_id((String) row[2]);
-            ch.setCharacteristics_name((String) row[3]);
-            ch.setCharacteristics_description((String) row[4]);
+            ch.setCharacteristicsId((String) row[2]);
+            ch.setCharacteristicsName((String) row[3]);
+            ch.setCharacteristicsDescription((String) row[4]);
             characteristics.add(ch);
         }
 
