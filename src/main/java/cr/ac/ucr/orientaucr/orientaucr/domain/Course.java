@@ -1,63 +1,85 @@
-
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "course")
 public class Course {
     
-    private String course_id;
-    private String course_code;
-    private int course_credits;
-    private String course_name;
-    private String course_description;
+    @Id
+    @Column(name = "course_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
+    private String courseId;
+    
+    @Column(name = "course_code", nullable = false, length = 10)
+    private String courseCode;
+    
+    @Column(name = "course_credits", nullable = false)
+    private int courseCredits;
+    
+    @Column(name = "course_name", nullable = false, length = 100)
+    private String courseName;
+    
+    @Column(name = "course_description", columnDefinition = "TEXT")
+    private String courseDescription;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CurriculumCourse> curriculumCourses = new HashSet<>();
 
     public Course() {}
 
-    public Course(String course_id, String course_code, int course_credits, String course_name, String course_description) {
-        this.course_id = course_id;
-        this.course_code = course_code;
-        this.course_credits = course_credits;
-        this.course_name = course_name;
-        this.course_description = course_description;
+    public Course(String courseCode, int courseCredits, String courseName, String courseDescription) {
+        this.courseCode = courseCode;
+        this.courseCredits = courseCredits;
+        this.courseName = courseName;
+        this.courseDescription = courseDescription;
     }
 
-    public String getCourse_id() {
-        return course_id;
+    // Getters y Setters
+    public String getCourseId() {
+        return courseId;
     }
 
-    public void setCourse_id(String course_id) {
-        this.course_id = course_id;
+    public String getCourseCode() {
+        return courseCode;
     }
 
-    public String getCourse_code() {
-        return course_code;
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
     }
 
-    public void setCourse_code(String course_code) {
-        this.course_code = course_code;
+    public int getCourseCredits() {
+        return courseCredits;
     }
 
-    public int getCourse_credits() {
-        return course_credits;
+    public void setCourseCredits(int courseCredits) {
+        this.courseCredits = courseCredits;
     }
 
-    public void setCourse_credits(int course_credits) {
-        this.course_credits = course_credits;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public String getCourse_name() {
-        return course_name;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
-    public void setCourse_name(String course_name) {
-        this.course_name = course_name;
+    public String getCourseDescription() {
+        return courseDescription;
     }
 
-    public String getCourse_description() {
-        return course_description;
+    public void setCourseDescription(String courseDescription) {
+        this.courseDescription = courseDescription;
     }
 
-    public void setCourse_description(String course_description) {
-        this.course_description = course_description;
+    public Set<CurriculumCourse> getCurriculumCourses() {
+        return curriculumCourses;
     }
-    
-    
+
+    public void setCurriculumCourses(Set<CurriculumCourse> curriculumCourses) {
+        this.curriculumCourses = curriculumCourses;
+    }
 }
