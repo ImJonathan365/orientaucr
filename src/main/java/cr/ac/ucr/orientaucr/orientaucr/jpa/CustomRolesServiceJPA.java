@@ -2,8 +2,6 @@ package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
-import cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository;
-import cr.ac.ucr.orientaucr.orientaucr.repository.CustomRolesRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
@@ -13,9 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.lCustomRolesRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.lCustomRolesRepository;
 
 @Repository
-public class CustomRolesServiceJPA implements CustomRolesRepository {
+public class CustomRolesServiceJPA implements lCustomRolesRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

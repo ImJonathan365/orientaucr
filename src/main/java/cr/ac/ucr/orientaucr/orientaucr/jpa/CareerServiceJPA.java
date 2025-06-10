@@ -32,21 +32,24 @@ public class CareerServiceJPA implements ICareerService {
     @Override
     @Transactional
     public void add(Career t) {
-        t.setCareer_id(UUID.randomUUID().toString()); 
+        t.setCareerId(UUID.randomUUID().toString());
         careerRepo.save(t);
     }
 
     @Override
     public void update(Career t) {
-        Career existing = careerRepo.findById(t.getCareer_id()).orElseThrow();
-        existing.setCareer_name(t.getCareer_name());
-        existing.setCareer_description(t.getCareer_description());
-        existing.setCareer_duration_years(t.getCareer_duration_years());
+        Career existing = careerRepo.findById(t.getCareerId()).orElseThrow();
+        existing.setCareerName(t.getCareerName());
+        existing.setCareerDescription(t.getCareerDescription());
+        existing.setCareerDurationYears(t.getCareerDurationYears());
         careerRepo.save(existing);
     }
 
     @Override
     public void deleteById(String i) {
+        Career career = careerRepo.findById(i).orElseThrow();
+        career.getCharacteristics().clear(); 
+        careerRepo.save(career); 
         careerRepo.deleteById(i);
     }
 

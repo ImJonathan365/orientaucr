@@ -1,12 +1,15 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,13 +20,13 @@ public class Career {
     
     @Id
     @Column(name = "career_id", length = 36)
-    private String career_id;
+    private String careerId;
     @Column(name = "career_name", nullable = false, length = 100)
-    private String career_name;
+    private String careerName;
     @Column(name = "career_description", columnDefinition = "TEXT")
-    private String career_description;
+    private String careerDescription;
     @Column(name = "career_duration_years", nullable = false)
-    private int career_duration_years;
+    private int careerDurationYears;
     @ManyToMany
     @JoinTable(
         name = "career_characteristics", 
@@ -32,46 +35,50 @@ public class Career {
     )
     @JsonIgnoreProperties("careers")
     private Set<Characteristic> characteristics = new HashSet<>();
+    
+    @OneToOne(mappedBy = "career", cascade = CascadeType.REMOVE)
+    private Curricula curricula;
 
     public Career() {}
 
-    public Career(String career_id, String career_name, String career_description, int career_duration_years) {
-        this.career_id = career_id;
-        this.career_name = career_name;
-        this.career_description = career_description;
-        this.career_duration_years = career_duration_years;
+    public Career(String careerId, String careerName, String careerDescription, int careerDurationYears, Curricula curricula) {
+        this.careerId = careerId;
+        this.careerName = careerName;
+        this.careerDescription = careerDescription;
+        this.careerDurationYears = careerDurationYears;
+        this.curricula = curricula;
     }
 
-    public String getCareer_id() {
-        return career_id;
+    public String getCareerId() {
+        return careerId;
     }
 
-    public void setCareer_id(String career_id) {
-        this.career_id = career_id;
+    public void setCareerId(String careerId) {
+        this.careerId = careerId;
     }
 
-    public String getCareer_name() {
-        return career_name;
+    public String getCareerName() {
+        return careerName;
     }
 
-    public void setCareer_name(String career_name) {
-        this.career_name = career_name;
+    public void setCareerName(String careerName) {
+        this.careerName = careerName;
     }
 
-    public String getCareer_description() {
-        return career_description;
+    public String getCareerDescription() {
+        return careerDescription;
     }
 
-    public void setCareer_description(String career_description) {
-        this.career_description = career_description;
+    public void setCareerDescription(String careerDescription) {
+        this.careerDescription = careerDescription;
     }
 
-    public int getCareer_duration_years() {
-        return career_duration_years;
+    public int getCareerDurationYears() {
+        return careerDurationYears;
     }
 
-    public void setCareer_duration_years(int career_duration_years) {
-        this.career_duration_years = career_duration_years;
+    public void setCareerDurationYears(int careerDurationYears) {
+        this.careerDurationYears = careerDurationYears;
     }
 
     public Set<Characteristic> getCharacteristics() {
@@ -81,5 +88,17 @@ public class Career {
     public void setCharacteristics(Set<Characteristic> characteristics) {
         this.characteristics = characteristics;
     }
+
+    public Curricula getCurricula() {
+        return curricula;
+    }
+
+    public void setCurricula(Curricula curricula) {
+        this.curricula = curricula;
+    }
+
+    
+
+    
 
 }

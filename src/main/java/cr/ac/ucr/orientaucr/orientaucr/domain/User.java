@@ -12,8 +12,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -55,7 +56,7 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "rol_id")
     )
     @JsonIgnoreProperties("users")
-    private LinkedList<Roles> userRoles = new LinkedList<>();
+    private List<Roles> userRoles = new ArrayList<>();
 
     public User() {}
 
@@ -143,12 +144,12 @@ public class User {
         this.userAllowEmailNotification = userAllowEmailNotification;
     }
 
-    public LinkedList<Roles> getUserRoles() {
+    public List<Roles> getUserRoles() {
         return userRoles;
     }
 
-    public void setUserRoles(LinkedList<Roles> userRoles) {
+    public void setUserRoles(List<Roles> userRoles) {
         this.userRoles = userRoles;
     }
-    
+   
 }
