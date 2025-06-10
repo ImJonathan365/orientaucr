@@ -1,6 +1,8 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,13 @@ import java.util.List;
 @Table(name = "simulation_question")
 public class SimulationQuestion {
 
+    public enum Difficulty {
+        easy, medium, hard
+    }
+
+    public enum QuestionCategory {
+        mathematical_logic, verbal_logic, other
+    }
     @Id
     @Column(name = "question_id", length = 36)
     private String questionId;
@@ -19,14 +28,13 @@ public class SimulationQuestion {
     @Enumerated(EnumType.STRING)
     private QuestionCategory questionCategory = QuestionCategory.other;
 
-    // Relación uno a muchos: una pregunta tiene muchas opciones
+    @Column(name = "question_dificulty")
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty = Difficulty.medium;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SimulationOption> options = new ArrayList<>();
-
-    @OneToOne(cascade = CascadeType.ALL)
-@JoinColumn(name = "correct_option_id")
-private SimulationOption correctOption;
-
 
     public SimulationQuestion() {
     }
@@ -35,9 +43,6 @@ private SimulationOption correctOption;
         this.questionId = questionId;
         this.questionText = questionText;
     }
-
-    // Getters y Setters
-
     public String getQuestionId() {
         return questionId;
     }
@@ -62,6 +67,14 @@ private SimulationOption correctOption;
         this.questionCategory = questionCategory;
     }
 
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public List<SimulationOption> getOptions() {
         return options;
     }
@@ -74,12 +87,10 @@ private SimulationOption correctOption;
             }
         }
     }
-
     public SimulationOption getCorrectOption() {
-        return correctOption;
-    }
-
-    public void setCorrectOption(SimulationOption correctOption) {
-        this.correctOption = correctOption;
+        return options.stream()
+                .filter(SimulationOption::isCorrect)
+                .findFirst()
+                .orElse(null);
     }
 }
