@@ -28,19 +28,26 @@ public class Course {
     @JsonIgnore
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CurriculumCourse> curriculumCourses = new HashSet<>();
+    
+    private int courseSemester; 
 
     public Course() {}
 
-    public Course(String courseCode, int courseCredits, String courseName, String courseDescription) {
+    public Course(String courseId, String courseCode, int courseCredits, String courseName, String courseDescription, int courseSemester) {
+        this.courseId = courseId;
         this.courseCode = courseCode;
         this.courseCredits = courseCredits;
         this.courseName = courseName;
         this.courseDescription = courseDescription;
+        this.courseSemester = courseSemester;
     }
 
-    // Getters y Setters
     public String getCourseId() {
         return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
     }
 
     public String getCourseCode() {
@@ -82,4 +89,16 @@ public class Course {
     public void setCurriculumCourses(Set<CurriculumCourse> curriculumCourses) {
         this.curriculumCourses = curriculumCourses;
     }
+
+    public int getCourseSemester() {
+        return courseSemester;
+    }
+
+    public void setCourseSemester(int courseSemester) {
+        this.courseSemester = courseSemester;
+    }
+
+    
+
+    
 }

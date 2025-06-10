@@ -1,6 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,11 @@ public class CareerController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @RequestMapping("/listByCurricula/{curricula_id}")
+    @ResponseBody
+    public ResponseEntity<List<Course>> getAllCourses(@PathVariable("curricula_id") String curriculaId) {
+        return ResponseEntity.ok(careerService.getAllCourses(curriculaId));
     }
 
 }

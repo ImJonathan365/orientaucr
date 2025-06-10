@@ -1,5 +1,6 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ public class Curricula {
     @OneToMany(mappedBy = "curricula", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CurriculumCourse> courses = new HashSet<>();
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "career_id")
     private Career career;

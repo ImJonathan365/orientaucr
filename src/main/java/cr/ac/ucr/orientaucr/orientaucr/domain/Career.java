@@ -36,7 +36,7 @@ public class Career {
     @JsonIgnoreProperties("careers")
     private Set<Characteristic> characteristics = new HashSet<>();
     
-    @OneToOne(mappedBy = "career", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "career", cascade = CascadeType.ALL, orphanRemoval = true)
     private Curricula curricula;
 
     public Career() {}
