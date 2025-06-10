@@ -34,6 +34,9 @@ public class CurriculumCourse {
     @Column(name = "course_semester", nullable = false)
     private int courseSemester;
 
+    public CurriculumCourse() {}
+
+    
     public CurriculumCourse(CurriculumCourseKey id, Curricula curricula, Course course, int courseSemester) {
         this.id = id;
         this.curricula = curricula;

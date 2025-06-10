@@ -14,6 +14,9 @@ public class CurriculumCourseKey implements Serializable {
 
     @Column(name = "course_id")
     private String courseId;
+
+    public CurriculumCourseKey() {}
+    
     
     public CurriculumCourseKey(String curriculaId, String courseId) {
         this.curriculaId = curriculaId;
@@ -44,6 +47,22 @@ public class CurriculumCourseKey implements Serializable {
             return false;
         }
         return Objects.equals(this.courseId, other.courseId);
+    }
+
+    public String getCurriculaId() {
+        return curriculaId;
+    }
+
+    public void setCurriculaId(String curriculaId) {
+        this.curriculaId = curriculaId;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
     }
 
     

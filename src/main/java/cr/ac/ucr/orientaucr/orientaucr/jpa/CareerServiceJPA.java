@@ -1,8 +1,11 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICareerRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICharacteristicRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ICourseRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ICurriculaRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +21,12 @@ public class CareerServiceJPA implements ICareerService {
 
     @Autowired
     private ICharacteristicRepository characteristicRepo;
+    
+    @Autowired
+    private ICurriculaRepository curriculaRepo;
+    
+    @Autowired
+    private ICourseRepository courseRepo;
 
     @Override
     public List<Career> getAll(String search) {
@@ -46,16 +55,20 @@ public class CareerServiceJPA implements ICareerService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String i) {
-        Career career = careerRepo.findById(i).orElseThrow();
-        career.getCharacteristics().clear(); 
-        careerRepo.save(career); 
         careerRepo.deleteById(i);
     }
 
     @Override
     public Career findById(String i) {
         return careerRepo.findById(i).get();
+    }
+    
+    @Override
+    @Transactional
+    public List<Course> getAllCourses(String curriculaId) {
+        return courseRepo.findByCurriculaId(curriculaId);
     }
 
 }
