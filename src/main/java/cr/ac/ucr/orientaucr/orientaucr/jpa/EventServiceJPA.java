@@ -64,7 +64,9 @@ public void add(Event t) {
     }
 
     @Override
-    public Event findById(String i) {
-      return  repo.findById(i).get();
-    }
+    public Event findById(String id) {
+    return repo.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
+}
+
 }
