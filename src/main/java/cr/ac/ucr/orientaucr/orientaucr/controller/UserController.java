@@ -1,18 +1,14 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.LinkedList;
+import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
+import java.io.File;
 import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,18 +28,20 @@ public class UserController {
 
     @Autowired
     private IUserService service;
+    
+    private ImageUtils imageService = new ImageUtils();
 
-    private final List<String> ALLOWED_IMAGE_TYPES = List.of("image/jpeg", "image/jpg", "image/png");
+    private final String dirUser = System.getProperty("user.dir");
 
-    @PreAuthorize("hasAuthority('VER USUARIOS')")
+    //@PreAuthorize("hasAuthority('VER USUARIOS')")
     @RequestMapping("/list")
     @ResponseBody
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @PreAuthorize("hasAuthority('VER USUARIOS')")
-    @GetMapping("/users/search")
+    //@PreAuthorize("hasAuthority('VER USUARIOS')")
+    @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam("q") String search) {
         try {
             List<User> users = service.getAll(search);
@@ -58,49 +56,79 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAuthority('CREAR USUARIOS')")
+    //@PreAuthorize("hasAuthority('CREAR USUARIOS')")
     @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestPart("user") User user, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+    public ResponseEntity<String> addUser(
+            @RequestPart("user") String userJson,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) {
+        String imagePath = null;
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            User user = mapper.readValue(userJson, User.class);
+
             if (imageFile != null && !imageFile.isEmpty()) {
-                //String imagePath = imageService.saveImage(imageFile);
-                //user.setUser_profile_picture(imagePath);
+                imagePath = imageService.saveImage(imageFile, dirUser + File.separator + "uploads" + File.separator + "users");
+                user.setUserProfilePicture(imagePath);
             }
 
             service.add(user);
             return ResponseEntity.ok("Usuario agregado correctamente");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al agregar usuario: " + e.getMessage());
+            if (imagePath != null) {
+                imageService.deleteImage(dirUser + File.separator + "uploads" + File.separator + "users", imagePath);
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al agregar usuario: " + e.getMessage());
         }
     }
 
-    @PreAuthorize("hasAuthority('MODIFICAR USUARIOS') or hasAuthority('EDITAR PERFIL')")
-    @PutMapping("/users/{userId}")
-    public ResponseEntity<String> updateUser(@RequestPart("user") User updatedUser, @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+    //@PreAuthorize("hasAuthority('MODIFICAR USUARIOS') or hasAuthority('EDITAR PERFIL')")
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUser(
+            @RequestPart("user") String userJson,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+
+        String oldImage = null;
+        String newImagePath = null;
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            User updatedUser = mapper.readValue(userJson, User.class);
+
             if (updatedUser.getUserId() == null || updatedUser.getUserId().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("ID de usuario requerido.");
             }
+
             User existingUser = service.findById(updatedUser.getUserId());
             if (existingUser == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
             }
 
+            oldImage = existingUser.getUserProfilePicture();
+
             if (imageFile != null && !imageFile.isEmpty()) {
-                //String imagePath = imageService.saveImage(imageFile);
-                //updatedUser.setUser_profile_picture(imagePath);
+                newImagePath = imageService.saveImage(imageFile, dirUser + File.separator + "uploads" + File.separator + "users");
+                updatedUser.setUserProfilePicture(newImagePath);
             } else {
-                updatedUser.setUserProfilePicture(existingUser.getUserProfilePicture());
+                updatedUser.setUserProfilePicture(oldImage);
             }
 
             service.update(updatedUser);
+            if (newImagePath != null && oldImage != null && !oldImage.equals(newImagePath)) {
+                imageService.deleteImage(dirUser + File.separator + "uploads" + File.separator + "users", oldImage);
+            }
             return ResponseEntity.ok("Usuario actualizado correctamente");
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar usuario: " + e.getMessage());
+            if (newImagePath != null) {
+                imageService.deleteImage(dirUser + File.separator + "uploads" + File.separator + "users", newImagePath);
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar usuario: " + e.getMessage());
         }
     }
 
-    @PreAuthorize("hasAuthority('ELIMINAR USUARIOS')")
+    //@PreAuthorize("hasAuthority('ELIMINAR USUARIOS')")
     @DeleteMapping("/delete/{user_id}")
     public ResponseEntity<String> deleteUser(@PathVariable("user_id") String userId) {
         try {
@@ -115,8 +143,8 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAuthority('VER USUARIO')")
-    @GetMapping("/search/{user_id}")
+    //@PreAuthorize("hasAuthority('VER USUARIO')")
+    @GetMapping("/find/{user_id}")
     public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
         try {
             if (userId == null || userId.trim().isEmpty()) {
