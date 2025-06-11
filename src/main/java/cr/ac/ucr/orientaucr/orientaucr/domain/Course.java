@@ -29,7 +29,8 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CurriculumCourse> curriculumCourses = new HashSet<>();
     
-    private int courseSemester; 
+    
+    private int courseSemester = 0; 
 
     public Course() {}
 

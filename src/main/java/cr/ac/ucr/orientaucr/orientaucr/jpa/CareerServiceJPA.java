@@ -2,6 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Curricula;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICareerRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICharacteristicRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICourseRepository;
@@ -42,6 +43,8 @@ public class CareerServiceJPA implements ICareerService {
     @Transactional
     public void add(Career t) {
         t.setCareerId(UUID.randomUUID().toString());
+        t.setCurricula(new Curricula());
+        t.getCurricula().setCurriculaId(UUID.randomUUID().toString());
         careerRepo.save(t);
     }
 
@@ -69,6 +72,24 @@ public class CareerServiceJPA implements ICareerService {
     @Transactional
     public List<Course> getAllCourses(String curriculaId) {
         return courseRepo.findByCurriculaId(curriculaId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCourseFromCareer(String curriculaId, String courseId) {
+        courseRepo.deleteCourseFromCareer(curriculaId, courseId);
+    }
+
+    @Override
+    @Transactional
+    public List<Course> getCoursesForCurricula(String curriculaId) {
+        return courseRepo.getCoursesForCurricula(curriculaId);
+    }
+
+    @Override
+    @Transactional
+    public void addCourseToCurricula(String curriculaId, String courseId, int semester) {
+        courseRepo.addCourseToCurricula(curriculaId, courseId, semester);
     }
 
 }
