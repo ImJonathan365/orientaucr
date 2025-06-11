@@ -4,6 +4,7 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class CareerController {
 
     @Autowired
     private ICareerService careerService;
-    
+
     @GetMapping("/listCareers")
     public String page(Model model) {
         model.addAttribute("career", careerService.getAll());
@@ -58,12 +59,12 @@ public class CareerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
+
     @GetMapping("/searchCareer/{career_id}")
     public ResponseEntity<Career> getCareerById(@PathVariable("career_id") String careerId) {
         try {
             Career career = careerService.findById(careerId);
-            
+
             if (career != null) {
                 return ResponseEntity.ok(career);
             } else {
@@ -73,10 +74,36 @@ public class CareerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @RequestMapping("/listByCurricula/{curricula_id}")
     @ResponseBody
     public ResponseEntity<List<Course>> getAllCourses(@PathVariable("curricula_id") String curriculaId) {
         return ResponseEntity.ok(careerService.getAllCourses(curriculaId));
+    }
+
+    @DeleteMapping("/deleteCourse/{curricula_id}/{course_id}")
+    public ResponseEntity<Void> deleteCourseFromCareer(@PathVariable("curricula_id") String curriculaId, @PathVariable("course_id") String courseId) {
+        try {
+            careerService.deleteCourseFromCareer(curriculaId, courseId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @RequestMapping("/listCoursesForCurricula/{curricula_id}")
+    @ResponseBody
+    public ResponseEntity<List<Course>> getCoursesForCurricula(@PathVariable("curricula_id") String curriculaId) {
+        return ResponseEntity.ok(careerService.getCoursesForCurricula(curriculaId));
+    }
+
+    @PostMapping("/addCourse")
+    public ResponseEntity<Void> addCourseToCareer(@RequestBody Map<String, Object> body) {
+        String curriculaId = (String) body.get("curriculaId");
+        String courseId = (String) body.get("courseId");
+        int semester = (int) body.get("semester");
+        careerService.addCourseToCurricula(curriculaId, courseId, semester);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
