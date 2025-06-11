@@ -45,6 +45,7 @@ public class CareerServiceJPA implements ICareerService {
         t.setCareerId(UUID.randomUUID().toString());
         t.setCurricula(new Curricula());
         t.getCurricula().setCurriculaId(UUID.randomUUID().toString());
+        t.getCurricula().setCareer(t);
         careerRepo.save(t);
     }
 
