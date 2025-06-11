@@ -1,8 +1,10 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Characteristic;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,9 +103,17 @@ public class CareerController {
     public ResponseEntity<Void> addCourseToCareer(@RequestBody Map<String, Object> body) {
         String curriculaId = (String) body.get("curriculaId");
         String courseId = (String) body.get("courseId");
-        int semester = (int) body.get("semester");
+        int semester = ((Number) body.get("semester")).intValue();
         careerService.addCourseToCurricula(curriculaId, courseId, semester);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/addCareer")
+    public ResponseEntity<Map<String, String>> addNewCareerWithCorricula(@RequestBody Career career) {
+        String curriculaId = careerService.addNewCareerWithCorricula(career);
+        Map<String, String> response = new HashMap<>();
+        response.put("curriculaId", curriculaId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }
