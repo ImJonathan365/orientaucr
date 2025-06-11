@@ -1,8 +1,12 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Career;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Curricula;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICareerRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICharacteristicRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ICourseRepository;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ICurriculaRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICareerService;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +22,12 @@ public class CareerServiceJPA implements ICareerService {
 
     @Autowired
     private ICharacteristicRepository characteristicRepo;
+    
+    @Autowired
+    private ICurriculaRepository curriculaRepo;
+    
+    @Autowired
+    private ICourseRepository courseRepo;
 
     @Override
     public List<Career> getAll(String search) {
@@ -32,20 +42,24 @@ public class CareerServiceJPA implements ICareerService {
     @Override
     @Transactional
     public void add(Career t) {
-        t.setCareer_id(UUID.randomUUID().toString()); 
+        t.setCareerId(UUID.randomUUID().toString());
+        t.setCurricula(new Curricula());
+        t.getCurricula().setCurriculaId(UUID.randomUUID().toString());
+        t.getCurricula().setCareer(t);
         careerRepo.save(t);
     }
 
     @Override
     public void update(Career t) {
-        Career existing = careerRepo.findById(t.getCareer_id()).orElseThrow();
-        existing.setCareer_name(t.getCareer_name());
-        existing.setCareer_description(t.getCareer_description());
-        existing.setCareer_duration_years(t.getCareer_duration_years());
+        Career existing = careerRepo.findById(t.getCareerId()).orElseThrow();
+        existing.setCareerName(t.getCareerName());
+        existing.setCareerDescription(t.getCareerDescription());
+        existing.setCareerDurationYears(t.getCareerDurationYears());
         careerRepo.save(existing);
     }
 
     @Override
+    @Transactional
     public void deleteById(String i) {
         careerRepo.deleteById(i);
     }
@@ -53,6 +67,30 @@ public class CareerServiceJPA implements ICareerService {
     @Override
     public Career findById(String i) {
         return careerRepo.findById(i).get();
+    }
+    
+    @Override
+    @Transactional
+    public List<Course> getAllCourses(String curriculaId) {
+        return courseRepo.findByCurriculaId(curriculaId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCourseFromCareer(String curriculaId, String courseId) {
+        courseRepo.deleteCourseFromCareer(curriculaId, courseId);
+    }
+
+    @Override
+    @Transactional
+    public List<Course> getCoursesForCurricula(String curriculaId) {
+        return courseRepo.getCoursesForCurricula(curriculaId);
+    }
+
+    @Override
+    @Transactional
+    public void addCourseToCurricula(String curriculaId, String courseId, int semester) {
+        courseRepo.addCourseToCurricula(curriculaId, courseId, semester);
     }
 
 }

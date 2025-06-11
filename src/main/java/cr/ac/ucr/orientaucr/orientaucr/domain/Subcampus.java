@@ -4,64 +4,62 @@ package cr.ac.ucr.orientaucr.orientaucr.domain;
 
 public class Subcampus {
     
-    private String subcampus_id;
-    private String subcampus_name;
-    private String subcampus_description;
-    private String subcampus_location;
-    private String campus_id;
+    private String subcampusId;
+    private String subcampusName;
+    private String subcampusDescription;
+    private String subcampusLocation;
+    private String campusId;
 
     public Subcampus() {}
 
-    public Subcampus(String subcampus_id, String subcampus_name, String subcampus_description, String subcampus_location, String campus_id) {
-        this.subcampus_id = subcampus_id;
-        this.subcampus_name = subcampus_name;
-        this.subcampus_description = subcampus_description;
-        this.subcampus_location = subcampus_location;
-        this.campus_id = campus_id;
+    public Subcampus(String subcampusId, String subcampusName, String subcampusDescription, String subcampusLocation, String campusId) {
+        this.subcampusId = subcampusId;
+        this.subcampusName = subcampusName;
+        this.subcampusDescription = subcampusDescription;
+        this.subcampusLocation = subcampusLocation;
+        this.campusId = campusId;
     }
 
-    public String getSubcampus_id() {
-        return subcampus_id;
+    public String getSubcampusId() {
+        return subcampusId;
     }
 
-    public void setSubcampus_id(String subcampus_id) {
-        this.subcampus_id = subcampus_id;
+    public void setSubcampusId(String subcampusId) {
+        this.subcampusId = subcampusId;
     }
 
-    public String getSubcampus_name() {
-        return subcampus_name;
+    public String getSubcampusName() {
+        return subcampusName;
     }
 
-    public void setSubcampus_name(String subcampus_name) {
-        this.subcampus_name = subcampus_name;
+    public void setSubcampusName(String subcampusName) {
+        this.subcampusName = subcampusName;
     }
 
-    public String getSubcampus_description() {
-        return subcampus_description;
+    public String getSubcampusDescription() {
+        return subcampusDescription;
     }
 
-    public void setSubcampus_description(String subcampus_description) {
-        this.subcampus_description = subcampus_description;
+    public void setSubcampusDescription(String subcampusDescription) {
+        this.subcampusDescription = subcampusDescription;
     }
 
-    public String getSubcampus_location() {
-        return subcampus_location;
+    public String getSubcampusLocation() {
+        return subcampusLocation;
     }
 
-    public void setSubcampus_location(String subcampus_location) {
-        this.subcampus_location = subcampus_location;
+    public void setSubcampusLocation(String subcampusLocation) {
+        this.subcampusLocation = subcampusLocation;
     }
 
-    public String getCampus_id() {
-        return campus_id;
+    public String getCampusId() {
+        return campusId;
     }
 
-    public void setCampus_id(String campus_id) {
-        this.campus_id = campus_id;
+    public void setCampusId(String campusId) {
+        this.campusId = campusId;
     }
+
     
-    
-    
-    
-    
+
 }

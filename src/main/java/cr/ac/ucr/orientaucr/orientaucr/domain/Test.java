@@ -15,6 +15,15 @@ public class Test {
 
     @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
     private String questionText;
+    
+    @Column(name = "question_help_text", columnDefinition = "TEXT")
+    private String questionHelpText;
+        
+    @Column(name = "is_active")
+    private boolean isActive;
+    
+    @Column(name = "is_multiple_selection")
+    private boolean isMultipleSelection;
 
     @ManyToMany
     @JoinTable(
@@ -27,10 +36,12 @@ public class Test {
 
     public Test() {}
 
-    public Test(String questionId, String questionText, List<Characteristic> characteristics) {
+    public Test(String questionId, String questionText, String questionHelpText, boolean isActive, boolean isMultipleSelection) {
         this.questionId = questionId;
         this.questionText = questionText;
-        this.characteristics = characteristics;
+        this.questionHelpText = questionHelpText;
+        this.isActive = isActive;
+        this.isMultipleSelection = isMultipleSelection;
     }
 
     public String getQuestionId() {
@@ -49,6 +60,30 @@ public class Test {
         this.questionText = questionText;
     }
 
+    public String getQuestionHelpText() {
+        return questionHelpText;
+    }
+
+    public void setQuestionHelpText(String questionHelpText) {
+        this.questionHelpText = questionHelpText;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isIsMultipleSelection() {
+        return isMultipleSelection;
+    }
+
+    public void setIsMultipleSelection(boolean isMultipleSelection) {
+        this.isMultipleSelection = isMultipleSelection;
+    }
+
     public List<Characteristic> getCharacteristics() {
         return characteristics;
     }
@@ -56,4 +91,5 @@ public class Test {
     public void setCharacteristics(List<Characteristic> characteristics) {
         this.characteristics = characteristics;
     }
+
 }

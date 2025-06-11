@@ -24,7 +24,7 @@ public class SimulationOption {
     @JsonBackReference
     private SimulationQuestion question;
 
- 
+
     public String getOptionId() {
         return optionId;
     }
