@@ -7,5 +7,5 @@ package cr.ac.ucr.orientaucr.orientaucr.services;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 
 public interface lEventService extends CRUD<Event>{
-    
+    void InsertUserInterestedEvent(String eventId,String userId);
 }

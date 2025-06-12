@@ -174,5 +174,16 @@ public ResponseEntity<String> deleteEvent(@PathVariable String id) {
                 .body("Error al eliminar el evento: " + e.getMessage());
     }
 }
-
+@PostMapping("/interested/{eventId}/{userId}")
+public ResponseEntity<String> insertUserInterestedEvent(
+        @PathVariable String eventId,
+        @PathVariable String userId) {
+    try {
+        service.InsertUserInterestedEvent(eventId, userId);
+        return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al marcar interés del usuario: " + e.getMessage());
+    }
+}
 }

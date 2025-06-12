@@ -7,14 +7,19 @@ package cr.ac.ucr.orientaucr.orientaucr.jpa;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 import cr.ac.ucr.orientaucr.orientaucr.repository.lEventRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.lEventService;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.StoredProcedureQuery;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class EventServiceJPA implements lEventService{
-
+   @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     private lEventRepository repo;
     
@@ -68,5 +73,15 @@ public void add(Event t) {
     return repo.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
 }
+  @Override
+public void InsertUserInterestedEvent(String eventId, String userId) {
+    StoredProcedureQuery query = entityManager
+            .createStoredProcedureQuery("sp_InsertUserInterestedEvent")
+            .registerStoredProcedureParameter(1, String.class, ParameterMode.IN)
+            .registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
 
+    query.setParameter(1, eventId);
+    query.setParameter(2, userId);
+    query.execute();
+}
 }

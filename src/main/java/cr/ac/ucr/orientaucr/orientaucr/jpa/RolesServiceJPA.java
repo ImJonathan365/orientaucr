@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import cr.ac.ucr.orientaucr.orientaucr.repository.lCustomRolesRepository;
 
+
 @Service
 public class RolesServiceJPA implements lRolesService {
 
@@ -128,4 +129,6 @@ public class RolesServiceJPA implements lRolesService {
     public List<Roles> getAll(String search) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+
 }

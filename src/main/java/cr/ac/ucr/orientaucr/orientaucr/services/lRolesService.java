@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface lRolesService extends CRUD<Roles> {
     List<Permission> getAllPermissions();
-
+   
 }
