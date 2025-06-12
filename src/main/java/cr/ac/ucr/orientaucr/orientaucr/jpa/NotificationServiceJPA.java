@@ -43,7 +43,6 @@ public class NotificationServiceJPA implements INotificationService {
         if (notification.getNotificationId() == null || notification.getNotificationId().isEmpty()) {
             notification.setNotificationId(UUID.randomUUID().toString());
         }
-        // Attachments
         if (notification.getAttachments() != null) {
             for (NotificationAttachment attachment : notification.getAttachments()) {
                 if (attachment.getAttachmentId() == null || attachment.getAttachmentId().isEmpty()) {
@@ -52,7 +51,6 @@ public class NotificationServiceJPA implements INotificationService {
                 attachment.setNotification(notification);
             }
         }
-        // NotificationEvents
         if (notification.getNotificationEvents() != null) {
             for (NotificationEvent ne : notification.getNotificationEvents()) {
                 ne.setNotification(notification);
@@ -65,70 +63,62 @@ public class NotificationServiceJPA implements INotificationService {
             }
         }
         notificationRepo.save(notification);
-        // Ya no envíes aquí, solo lo hará el scheduler
     }
 
-    // ENVÍO PROGRAMADO
-    @Scheduled(fixedRate = 60000) // Cada minuto
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void sendScheduledNotifications() {
         List<Notification> pendientes = notificationRepo.findAll().stream()
-            .filter(n -> n.getNotificationSendDate() != null
+                .filter(n -> n.getNotificationSendDate() != null
                 && n.getNotificationSendDate().isBefore(LocalDateTime.now())
                 && !n.isSent())
-            .toList();
-
+                .toList();
         for (Notification notification : pendientes) {
             if (notification.getNotificationEvents() != null) {
                 for (NotificationEvent ne : notification.getNotificationEvents()) {
                     String eventId = ne.getEvent().getEventId();
                     List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
                     for (User user : destinatarios) {
-                        // Enviar todos los adjuntos
                         if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
                             for (NotificationAttachment attachment : notification.getAttachments()) {
                                 File file = new File(attachment.getFilePath());
                                 try {
                                     emailService.sendEmailWithAttachment(
-                                        user.getUserEmail(),
-                                        notification.getNotificationTitle(),
-                                        notification.getNotificationMessage(),
-                                        file
+                                            user.getUserEmail(),
+                                            notification.getNotificationTitle(),
+                                            notification.getNotificationMessage(),
+                                            file
                                     );
                                 } catch (Exception e) {
-                                    // Manejo de error
                                 }
                             }
                         } else {
                             try {
                                 emailService.sendEmailWithAttachment(
-                                    user.getUserEmail(),
-                                    notification.getNotificationTitle(),
-                                    notification.getNotificationMessage(),
-                                    null
+                                        user.getUserEmail(),
+                                        notification.getNotificationTitle(),
+                                        notification.getNotificationMessage(),
+                                        null
                                 );
                             } catch (Exception e) {
-                                // Manejo de error
                             }
                         }
                     }
                 }
             }
-            notification.setSent(true); // Marca como enviada
+            notification.setSent(true);
             notificationRepo.save(notification);
         }
-}
+    }
 
     @Override
     @Transactional
     public void update(Notification notification) {
         Notification existing = notificationRepo.findById(notification.getNotificationId())
-            .orElseThrow(() -> new RuntimeException("No existe notificación con id: " + notification.getNotificationId()));
+                .orElseThrow(() -> new RuntimeException("No existe notificación con id: " + notification.getNotificationId()));
         existing.setNotificationTitle(notification.getNotificationTitle());
         existing.setNotificationMessage(notification.getNotificationMessage());
         existing.setNotificationSendDate(notification.getNotificationSendDate());
-
-        // Actualizar attachments
         List<NotificationAttachment> existingAttachments = existing.getAttachments();
         existingAttachments.clear();
         if (notification.getAttachments() != null) {
@@ -140,8 +130,6 @@ public class NotificationServiceJPA implements INotificationService {
                 existingAttachments.add(attachment);
             }
         }
-
-        // Actualizar notificationEvents
         List<NotificationEvent> existingEvents = existing.getNotificationEvents();
         existingEvents.clear();
         if (notification.getNotificationEvents() != null) {
@@ -164,7 +152,7 @@ public class NotificationServiceJPA implements INotificationService {
     @Transactional
     public void deleteById(String id) {
         if (!notificationRepo.existsById(id)) {
-            throw new RuntimeException("No existe notificación con id: " + id);
+            throw new RuntimeException("No existe notificación con la id: " + id);
         }
         notificationRepo.deleteById(id);
     }
