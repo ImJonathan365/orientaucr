@@ -61,6 +61,7 @@ public class CareerServiceJPA implements ICareerService {
         existing.setCareerName(t.getCareerName());
         existing.setCareerDescription(t.getCareerDescription());
         existing.setCareerDurationYears(t.getCareerDurationYears());
+        existing.setCharacteristics(t.getCharacteristics());
         careerRepo.save(existing);
     }
 
