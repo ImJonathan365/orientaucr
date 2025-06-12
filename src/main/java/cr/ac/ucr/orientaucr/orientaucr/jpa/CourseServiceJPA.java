@@ -51,14 +51,13 @@ public class CourseServiceJPA implements ICourseService {
         Course existing = courseRepo.findById(t.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
-        // Actualizar campos básicos
         existing.setCourseCode(t.getCourseCode());
         existing.setCourseCredits(t.getCourseCredits());
         existing.setCourseName(t.getCourseName());
         existing.setCourseDescription(t.getCourseDescription());
         existing.setCourseSemester(t.getCourseSemester());
 
-        // Actualizar prerrequisitos (si se incluye la lista)
+        
         if (t.getPrerequisites() != null) {
             Set<Course> prerequisites = t.getPrerequisites().stream()
                     .map(prereq -> courseRepo.findById(prereq.getCourseId())
@@ -78,22 +77,18 @@ public class CourseServiceJPA implements ICourseService {
         Course course = courseRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
-        // Limpiar relación de cursos dependientes
         for (Course dependent : new HashSet<>(course.getDependentCourses())) {
             dependent.getPrerequisites().remove(course);
         }
         course.getDependentCourses().clear();
 
-        // Limpiar relación de prerrequisitos
         for (Course prerequisite : new HashSet<>(course.getPrerequisites())) {
             prerequisite.getDependentCourses().remove(course);
         }
         course.getPrerequisites().clear();
 
-        // Si tienes CurriculumCourses, límpialos también
         course.getCurriculumCourses().clear();
 
-        // Ahora sí puedes eliminar el curso
         courseRepo.delete(course);
     }
 

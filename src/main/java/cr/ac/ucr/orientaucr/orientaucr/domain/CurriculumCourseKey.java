@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-@Embeddable  // Indica que esta clase se incrustará en otra
+@Embeddable  
 public class CurriculumCourseKey implements Serializable {
     @Column(name = "curricula_id")
     private String curriculaId;
