@@ -1,15 +1,30 @@
-
 package cr.ac.ucr.orientaucr.orientaucr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import java.util.UUID;
 
+@Entity
+@Table(name = "campus")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Campus {
-    
+
+    @Id
+    @Column(name = "campus_id", columnDefinition = "CHAR(36)")
     private String campusId;
+
+    @Column(name = "campus_name", nullable = false, length = 100)
     private String campusName;
+
+    @Column(name = "campus_location", columnDefinition = "TINYTEXT")
     private String campusLocation;
+
+    @Column(name = "campus_description", columnDefinition = "TEXT")
     private String campusDescription;
 
-    public Campus() {}
+    public Campus() {
+        this.campusId = UUID.randomUUID().toString(); // autogenera si no se recibe desde BD
+    }
 
     public Campus(String campusId, String campusName, String campusLocation, String campusDescription) {
         this.campusId = campusId;
@@ -49,9 +64,4 @@ public class Campus {
     public void setCampusDescription(String campusDescription) {
         this.campusDescription = campusDescription;
     }
-
-    
-    
-    
-    
 }

@@ -2,6 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 import cr.ac.ucr.orientaucr.orientaucr.services.lEventService;
+import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/events")
 public class EventController {
 
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/events";
+
     private final lEventService service;
 
     public EventController(lEventService service) {
@@ -47,7 +50,6 @@ public class EventController {
         }
     }
 
-    // POST - add event
     @PostMapping("/add")
     public ResponseEntity<?> addEvent(
             @RequestParam("eventTitle") String eventTitle,
@@ -73,16 +75,12 @@ public class EventController {
             event.setCreatedBy(createdBy);
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", "events");
-                Files.createDirectories(uploadPath);
-                Path filePath = uploadPath.resolve(filename);
-                imageFile.transferTo(filePath.toFile());
+
+                String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
                 event.setEventImagePath(filename);
             }
 
             service.add(event);
-
             return ResponseEntity.ok("Evento agregado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -127,7 +125,7 @@ public class EventController {
             @RequestParam(value = "image", required = false) MultipartFile imageFile
     ) {
         try {
-            Event event = service.findById(eventId); // <-- recuperas el evento original
+            Event event = service.findById(eventId);
             if (event == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
             }
@@ -140,21 +138,15 @@ public class EventController {
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);
             event.setSubcampusId((subcampusId == null || subcampusId.isBlank()) ? null : subcampusId);
             event.setCreatedBy(createdBy);
-
             if (imageFile != null && !imageFile.isEmpty()) {
-                // Guardas la nueva imagen
-                String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", "events");
-                Files.createDirectories(uploadPath);
-                Path filePath = uploadPath.resolve(filename);
-                imageFile.transferTo(filePath.toFile());
-
-                // Si quieres eliminar la imagen anterior aquí puedes agregar lógica para borrarla
+                if (event.getEventImagePath() != null) {
+                    ImageUtils.deleteImage(UPLOAD_DIR, event.getEventImagePath());
+                }
+                String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
                 event.setEventImagePath(filename);
             }
 
             service.update(event);
-
             return ResponseEntity.ok("Evento actualizado correctamente");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -163,14 +155,24 @@ public class EventController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable String id) {
-        try {
-            service.deleteById(id);
-            return ResponseEntity.ok("Evento eliminado correctamente");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al eliminar el evento: " + e.getMessage());
+public ResponseEntity<String> deleteEvent(@PathVariable String id) {
+    try {
+        Event event = service.findById(id);
+        if (event == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
         }
+        String imageFilename = event.getEventImagePath();
+        if (imageFilename != null && !imageFilename.isBlank()) {
+            ImageUtils.deleteImage(UPLOAD_DIR, imageFilename);
+        }
+
+        service.deleteById(id);
+
+        return ResponseEntity.ok("Evento eliminado correctamente");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al eliminar el evento: " + e.getMessage());
     }
+}
 
 }
