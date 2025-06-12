@@ -13,7 +13,7 @@ public class NotificationAttachment {
 
     @Column(name = "file_name", length = 150, nullable = false)
     private String fileName;
-     
+
     @Column(name = "file_path", length = 255, nullable = false)
     private String filePath;
 
@@ -27,6 +27,19 @@ public class NotificationAttachment {
     @JoinColumn(name = "notification_id")
     @JsonIgnore
     private Notification notification;
+
+    public NotificationAttachment() {
+    }
+
+    public NotificationAttachment(String attachmentId, String fileName, String filePath,
+                                  String fileMimeType, Integer fileSizeKb, Notification notification) {
+        this.attachmentId = attachmentId;
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.fileMimeType = fileMimeType;
+        this.fileSizeKb = fileSizeKb;
+        this.notification = notification;
+    }
 
     public String getAttachmentId() {
         return attachmentId;
@@ -75,5 +88,4 @@ public class NotificationAttachment {
     public void setNotification(Notification notification) {
         this.notification = notification;
     }
-    
 }
