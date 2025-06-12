@@ -31,9 +31,19 @@ public class UserServiceJPA implements IUserService {
     @Override
     @Transactional
     public List<User> getAll() {
-        return repo.findAll();
+        return null;
     }
-
+    
+    @Override
+    public List<User> searchAllExcept(String search, String id) {
+        return repo.searchUsers(search, id);
+    }
+    
+    @Override
+    public List<User> getAllExcept(String id) {
+        return repo.getAllUsersExcept(id);
+    }
+    
     @Override
     @Transactional
     public void add(User user) {

@@ -28,7 +28,7 @@ public class UserController {
 
     @Autowired
     private IUserService service;
-    
+
     private ImageUtils imageService = new ImageUtils();
 
     private final String dirUser = System.getProperty("user.dir");
@@ -36,15 +36,33 @@ public class UserController {
     //@PreAuthorize("hasAuthority('VER USUARIOS')")
     @RequestMapping("/list")
     @ResponseBody
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<User>> getAllUsers(@RequestParam("userId") String userId) {
+        try {
+            if (userId == null || userId.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<User> users = service.getAllExcept(userId);
+
+            if (users.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     //@PreAuthorize("hasAuthority('VER USUARIOS')")
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam("q") String search) {
+    public ResponseEntity<List<User>> searchUsers(@RequestParam("search") String search, @RequestParam("userId") String userId) {
         try {
-            List<User> users = service.getAll(search);
+            if (userId == null || userId.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+                        
+            List<User> users = service.searchAllExcept(search, userId);
 
             if (users.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -182,6 +200,28 @@ public class UserController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody User simpleUser) {
+        try {
+            if (simpleUser.getUserName() == null || simpleUser.getUserName().isBlank()
+                    || simpleUser.getUserEmail() == null || simpleUser.getUserEmail().isBlank()
+                    || simpleUser.getUserPassword() == null || simpleUser.getUserPassword().isBlank()) {
+                return ResponseEntity.badRequest().body("Nombre, correo y contraseña son obligatorios.");
+            }
+
+            simpleUser.setUserLastname(null);
+            simpleUser.setUserProfilePicture(null);
+
+            service.add(simpleUser);
+
+            return ResponseEntity.ok("Usuario registrado correctamente");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al registrar el usuario: " + e.getMessage());
         }
     }
 
