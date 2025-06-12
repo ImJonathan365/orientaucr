@@ -1,17 +1,22 @@
-
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Course;
 import cr.ac.ucr.orientaucr.orientaucr.repository.ICourseRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.ICourseService;
+import jakarta.persistence.EntityNotFoundException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CourseServiceJPA implements ICourseService{
-    
+public class CourseServiceJPA implements ICourseService {
+
     @Autowired
     private ICourseRepository courseRepo;
 
@@ -26,29 +31,77 @@ public class CourseServiceJPA implements ICourseService{
     }
 
     @Override
-    public void add(Course t) {
-        t.setCourseId(UUID.randomUUID().toString());
-        courseRepo.save(t);
+    @Transactional
+    public void add(Course course) {
+        course.setCourseId(UUID.randomUUID().toString());
+
+        if (course.getPrerequisites() != null && !course.getPrerequisites().isEmpty()) {
+            Set<Course> prerequisites = course.getPrerequisites().stream()
+                    .map(prereq -> findById(prereq.getCourseId()))
+                    .collect(Collectors.toSet());
+            course.setPrerequisites(prerequisites);
+        }
+
+        courseRepo.save(course);
     }
 
     @Override
+    @Transactional
     public void update(Course t) {
-        Course existing = courseRepo.findById(t.getCourseId()).orElseThrow();
+        Course existing = courseRepo.findById(t.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        // Actualizar campos básicos
         existing.setCourseCode(t.getCourseCode());
         existing.setCourseCredits(t.getCourseCredits());
         existing.setCourseName(t.getCourseName());
         existing.setCourseDescription(t.getCourseDescription());
+        existing.setCourseSemester(t.getCourseSemester());
+
+        // Actualizar prerrequisitos (si se incluye la lista)
+        if (t.getPrerequisites() != null) {
+            Set<Course> prerequisites = t.getPrerequisites().stream()
+                    .map(prereq -> courseRepo.findById(prereq.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Prerrequisito no encontrado: " + prereq.getCourseId())))
+                    .collect(Collectors.toSet());
+            existing.setPrerequisites(prerequisites);
+        } else {
+            existing.setPrerequisites(Collections.emptySet());
+        }
+
         courseRepo.save(existing);
     }
 
     @Override
-    public void deleteById(String i) {
-        courseRepo.deleteById(i);
+    @Transactional
+    public void deleteById(String id) {
+        Course course = courseRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        // Limpiar relación de cursos dependientes
+        for (Course dependent : new HashSet<>(course.getDependentCourses())) {
+            dependent.getPrerequisites().remove(course);
+        }
+        course.getDependentCourses().clear();
+
+        // Limpiar relación de prerrequisitos
+        for (Course prerequisite : new HashSet<>(course.getPrerequisites())) {
+            prerequisite.getDependentCourses().remove(course);
+        }
+        course.getPrerequisites().clear();
+
+        // Si tienes CurriculumCourses, límpialos también
+        course.getCurriculumCourses().clear();
+
+        // Ahora sí puedes eliminar el curso
+        courseRepo.delete(course);
     }
 
     @Override
-    public Course findById(String i) {
-        return courseRepo.findById(i).get();
+    @Transactional
+    public Course findById(String id) {
+        return courseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Curso con " + id + " no existe"));
     }
-    
+
+   
 }
