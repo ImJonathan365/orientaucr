@@ -37,39 +37,34 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
+
 @PostMapping(value = "/create", consumes = {"multipart/form-data"})
 public ResponseEntity<Notification> create(
         @RequestPart("notification") String notificationJson,
         @RequestPart(value = "file", required = false) MultipartFile file
 ) {
     try {
-
         ObjectMapper objectMapper = new ObjectMapper();
         Notification notification = objectMapper.readValue(notificationJson, Notification.class);
         System.out.println("Parsed notification: " + notification);
 
-    
         if (file != null && !file.isEmpty()) {
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", "notifications");
-         
 
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
                 System.out.println("Carpeta creada: " + uploadPath.toAbsolutePath());
-            } else {
-             
             }
 
             Path filePath = uploadPath.resolve(filename);
-           
-
             file.transferTo(filePath.toFile());
-       
+
             NotificationAttachment attachment = new NotificationAttachment();
             attachment.setAttachmentId(UUID.randomUUID().toString());
             attachment.setFileName(file.getOriginalFilename());
-            attachment.setFilePath(filename);
+            // Guarda la ruta completa
+            attachment.setFilePath(filePath.toString());
             attachment.setFileMimeType(file.getContentType());
             attachment.setFileSizeKb((int) (file.getSize() / 1024));
             attachment.setNotification(notification);
