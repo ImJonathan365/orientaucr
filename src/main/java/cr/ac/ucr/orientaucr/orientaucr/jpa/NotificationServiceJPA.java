@@ -143,51 +143,55 @@ public class NotificationServiceJPA implements INotificationService {
         updateWithAttachments(notification, null);
     }
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void sendScheduledNotifications() {
-        List<Notification> pendientes = notificationRepo.findAll().stream()
-                .filter(n -> n.getNotificationSendDate() != null
-                        && n.getNotificationSendDate().before(new Date())
-                        && !n.isSent())
-                .toList();
+    
+@Scheduled(fixedRate = 60000) 
+@Transactional
+public void sendScheduledNotifications() {
+    List<Notification> pendientes = notificationRepo.findAll().stream()
+       .filter(n -> n.getNotificationSendDate() != null
+    && !n.isSent()
+    && n.getNotificationSendDate().before(new Date()))
+       .toList();
 
-        for (Notification notification : pendientes) {
-            if (notification.getNotificationEvents() != null) {
-                for (NotificationEvent ne : notification.getNotificationEvents()) {
-                    String eventId = ne.getEvent().getEventId();
-                    List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
-                    for (User user : destinatarios) {
-                        try {
-                            if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
-                                for (NotificationAttachment attachment : notification.getAttachments()) {
-                                    File file = new File(attachment.getFilePath());
-                                    emailService.sendEmailWithAttachment(
-                                            user.getUserEmail(),
-                                            notification.getNotificationTitle(),
-                                            notification.getNotificationMessage(),
-                                            file
-                                    );
-                                }
-                            } else {
+    for (Notification notification : pendientes) {
+        if (notification.getNotificationEvents() != null) {
+            for (NotificationEvent ne : notification.getNotificationEvents()) {
+                String eventId = ne.getEvent().getEventId();
+                List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
+                for (User user : destinatarios) {
+                    if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
+                        for (NotificationAttachment attachment : notification.getAttachments()) {
+                            File file = new File(attachment.getFilePath());
+                            try {
                                 emailService.sendEmailWithAttachment(
-                                        user.getUserEmail(),
-                                        notification.getNotificationTitle(),
-                                        notification.getNotificationMessage(),
-                                        null
+                                    user.getUserEmail(),
+                                    notification.getNotificationTitle(),
+                                    notification.getNotificationMessage(),
+                                    file
                                 );
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
+                        }
+                    } else {
+                        try {
+                            emailService.sendEmailWithAttachment(
+                                user.getUserEmail(),
+                                notification.getNotificationTitle(),
+                                notification.getNotificationMessage(),
+                                null
+                            );
                         } catch (Exception e) {
-                            System.err.println("Error enviando email a " + user.getUserEmail() + ": " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 }
             }
-
-            notification.setSent(true);
-            notificationRepo.save(notification);
         }
+        notification.setSent(true);
+        notificationRepo.save(notification);
     }
+}
 
     @Override
     @Transactional
