@@ -44,7 +44,9 @@ public class UserController {
             
             List<User> users = service.getAllExcept(userId);
 
-            if (users.isEmpty()) {
+            users.forEach(u -> System.out.println(u.getUserName()));
+            
+            if (users == null) {
                 return ResponseEntity.noContent().build();
             }
 
