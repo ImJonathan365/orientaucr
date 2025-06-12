@@ -48,6 +48,7 @@ public class User {
 
     @Column(name = "user_allow_email_notification")
     private boolean userAllowEmailNotification;
+    
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
