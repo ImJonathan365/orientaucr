@@ -20,7 +20,7 @@ public interface IUserRepository extends JpaRepository<User, String> {
     User authenticateUser(@Param("p_email") String email, @Param("p_password") String password);
 
     @Procedure(procedureName = "sp_search_users")
-    List<User> searchUsers(@Param("p_search") String search);
+    List<User> searchUsers(@Param("p_search") String search, @Param("p_user_id") String userId);
 
     @Procedure(procedureName = "sp_get_all_users")
     List<User> getAllUsers();
