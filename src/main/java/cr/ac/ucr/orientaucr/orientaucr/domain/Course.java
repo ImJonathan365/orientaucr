@@ -63,7 +63,7 @@ public class Course {
             this.prerequisites = prerequisiteIds.stream()
                     .map(id -> {
                         Course c = new Course();
-                        c.setCourseId(id);  // Solo asignamos el ID para referencia
+                        c.setCourseId(id);  
                         return c;
                     })
                     .collect(Collectors.toSet());

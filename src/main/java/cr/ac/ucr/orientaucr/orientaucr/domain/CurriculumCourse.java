@@ -16,17 +16,17 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "curriculum_courses")
 public class CurriculumCourse {
-    @EmbeddedId  // PK compuesta embebida
+    @EmbeddedId  
     private CurriculumCourseKey id;
 
     @ManyToOne
-    @MapsId("curriculaId")  // Relaciona con curriculaId de CurriculumCourseKey
+    @MapsId("curriculaId") 
     @JoinColumn(name = "curricula_id")
     @JsonIgnore
     private Curricula curricula;
 
     @ManyToOne
-    @MapsId("courseId")     // Relaciona con courseId de CurriculumCourseKey
+    @MapsId("courseId")     
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
