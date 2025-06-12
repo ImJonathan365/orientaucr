@@ -3,16 +3,23 @@ package cr.ac.ucr.orientaucr.orientaucr.repository;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+<<<<<<< HEAD
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+=======
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+>>>>>>> Luis
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, String> {
+<<<<<<< HEAD
 
     User findByUserEmailAndUserPassword(String email, String password);
 
@@ -73,3 +80,13 @@ public interface IUserRepository extends JpaRepository<User, String> {
     List<Permission> getPermissionsByRoleId(@Param("p_rol_id") String roleId);
 
 }
+=======
+    @Query(
+        value = "SELECT u.* FROM users u " +
+                "JOIN user_interested_event ue ON u.user_id = ue.user_id " +
+                "WHERE ue.event_id = :eventId AND u.user_allow_email_notification = true",
+        nativeQuery = true
+    )
+    List<User> findInterestedUsersWithNotificationsEnabled(@Param("eventId") String eventId);
+}
+>>>>>>> Luis
