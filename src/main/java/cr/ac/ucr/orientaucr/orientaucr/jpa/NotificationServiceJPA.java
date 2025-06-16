@@ -10,12 +10,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -101,35 +99,34 @@ public class NotificationServiceJPA implements INotificationService {
         notificationRepo.save(existing);
     }
 
-  private List<NotificationAttachment> saveAttachments(Notification notification, List<MultipartFile> attachments) {
-    List<NotificationAttachment> savedAttachments = new ArrayList<>();
-    try {
-        Path uploadPath = Paths.get(System.getProperty("user.dir"), FILE_STORAGE_PATH);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+    private List<NotificationAttachment> saveAttachments(Notification notification, List<MultipartFile> attachments) {
+        List<NotificationAttachment> savedAttachments = new ArrayList<>();
+        try {
+            Path uploadPath = Paths.get(System.getProperty("user.dir"), FILE_STORAGE_PATH);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            for (MultipartFile file : attachments) {
+                String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                Path filePath = uploadPath.resolve(filename);
+
+                file.transferTo(filePath.toFile());
+
+                NotificationAttachment attachment = new NotificationAttachment();
+                attachment.setAttachmentId(UUID.randomUUID().toString());
+                attachment.setFileName(file.getOriginalFilename());
+                attachment.setFilePath(filename);
+                attachment.setFileMimeType(file.getContentType());
+                attachment.setFileSizeKb((int) (file.getSize() / 1024));
+                attachment.setNotification(notification);
+
+                savedAttachments.add(attachment);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error guardando archivo", e);
         }
-        for (MultipartFile file : attachments) {
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(filename);
-
-            file.transferTo(filePath.toFile());
-
-            NotificationAttachment attachment = new NotificationAttachment();
-            attachment.setAttachmentId(UUID.randomUUID().toString());
-            attachment.setFileName(file.getOriginalFilename());
-            attachment.setFilePath(filename);
-            attachment.setFileMimeType(file.getContentType());
-            attachment.setFileSizeKb((int)(file.getSize() / 1024));
-            attachment.setNotification(notification);
-
-            savedAttachments.add(attachment);
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error guardando archivo", e);
+        return savedAttachments;
     }
-    return savedAttachments;
-}
-
 
     @Override
     @Transactional
@@ -143,55 +140,54 @@ public class NotificationServiceJPA implements INotificationService {
         updateWithAttachments(notification, null);
     }
 
-    
-@Scheduled(fixedRate = 60000) 
-@Transactional
-public void sendScheduledNotifications() {
-    List<Notification> pendientes = notificationRepo.findAll().stream()
-       .filter(n -> n.getNotificationSendDate() != null
-    && !n.isSent()
-    && n.getNotificationSendDate().before(new Date()))
-       .toList();
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void sendScheduledNotifications() {
+        List<Notification> pendientes = notificationRepo.findAll().stream()
+                .filter(n -> n.getNotificationSendDate() != null
+                && !n.isSent()
+                && n.getNotificationSendDate().before(new Date()))
+                .toList();
 
-    for (Notification notification : pendientes) {
-        if (notification.getNotificationEvents() != null) {
-            for (NotificationEvent ne : notification.getNotificationEvents()) {
-                String eventId = ne.getEvent().getEventId();
-                List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
-                for (User user : destinatarios) {
-                    if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
-                        for (NotificationAttachment attachment : notification.getAttachments()) {
-                            File file = new File(attachment.getFilePath());
+        for (Notification notification : pendientes) {
+            if (notification.getNotificationEvents() != null) {
+                for (NotificationEvent ne : notification.getNotificationEvents()) {
+                    String eventId = ne.getEvent().getEventId();
+                    List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
+                    for (User user : destinatarios) {
+                        if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
+                            for (NotificationAttachment attachment : notification.getAttachments()) {
+                                File file = new File(attachment.getFilePath());
+                                try {
+                                    emailService.sendEmailWithAttachment(
+                                            user.getUserEmail(),
+                                            notification.getNotificationTitle(),
+                                            notification.getNotificationMessage(),
+                                            file
+                                    );
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
                             try {
                                 emailService.sendEmailWithAttachment(
-                                    user.getUserEmail(),
-                                    notification.getNotificationTitle(),
-                                    notification.getNotificationMessage(),
-                                    file
+                                        user.getUserEmail(),
+                                        notification.getNotificationTitle(),
+                                        notification.getNotificationMessage(),
+                                        null
                                 );
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
-                    } else {
-                        try {
-                            emailService.sendEmailWithAttachment(
-                                user.getUserEmail(),
-                                notification.getNotificationTitle(),
-                                notification.getNotificationMessage(),
-                                null
-                            );
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
             }
+            notification.setSent(true);
+            notificationRepo.save(notification);
         }
-        notification.setSent(true);
-        notificationRepo.save(notification);
     }
-}
 
     @Override
     @Transactional

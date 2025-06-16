@@ -6,31 +6,29 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, String> {
 
-    // Login
-    User findByUserEmailAndUserPassword(String email, String password);
+    Optional<User> findByUserEmail(String email);
 
-    // Stored Procedures
     @Procedure(procedureName = "sp_authenticate_user")
     User authenticateUser(@Param("p_email") String email, @Param("p_password") String password);
 
-    @Procedure(procedureName = "sp_search_users")
-    List<User> searchUsers(@Param("p_search") String search, @Param("p_user_id") String userId);
+    @Procedure(procedureName = "sp_search_all_users_except")
+    List<User> searchAllUsersExcept(@Param("p_search") String search, @Param("p_user_id") String userId);
 
-    @Procedure(procedureName = "sp_get_all_users")
-    List<User> getAllUsers();
-
+    List<User> findByUserNameContainingOrUserLastnameContainingOrUserEmailContainingOrderByUserNameAsc(String userName, String userLastname, String userEmail);
+   
     @Procedure(procedureName = "sp_get_all_users_except")
     List<User> getAllUsersExcept(@Param("p_user_id") String userId);
+
+    List<User> findAllByOrderByUserNameAsc();
 
     @Procedure(procedureName = "sp_add_user")
     void addUser(
@@ -55,8 +53,12 @@ public interface IUserRepository extends JpaRepository<User, String> {
             @Param("p_password") String password,
             @Param("p_average") BigDecimal average,
             @Param("p_allow_email") Boolean allowEmail,
-            @Param("p_profile_picture") String profilePicture
+            @Param("p_profile_picture") String profilePicture,
+            @Param("p_token") String token
     );
+
+    @Procedure(procedureName = "sp_update_user_token")
+    void updateUserToken(@Param("p_user_id") String userId, @Param("p_jwt_token") String userToken);
 
     @Procedure(procedureName = "sp_delete_user")
     void deleteUser(@Param("p_id") String userId);
@@ -76,12 +78,7 @@ public interface IUserRepository extends JpaRepository<User, String> {
     @Procedure(procedureName = "sp_get_permissions_by_role_id")
     List<Permission> getPermissionsByRoleId(@Param("p_rol_id") String roleId);
 
-    // Native query
-    @Query(
-        value = "SELECT u.* FROM users u " +
-                "JOIN user_interested_event ue ON u.user_id = ue.user_id " +
-                "WHERE ue.event_id = :eventId AND u.user_allow_email_notification = true",
-        nativeQuery = true
-    )
-    List<User> findInterestedUsersWithNotificationsEnabled(@Param("eventId") String eventId);
+    @Procedure(procedureName = "sp_find_interested_users_with_notifications")
+    List<User> findInterestedUsersWithNotificationsEnabled(@Param("p_event_id") String eventId);
+
 }

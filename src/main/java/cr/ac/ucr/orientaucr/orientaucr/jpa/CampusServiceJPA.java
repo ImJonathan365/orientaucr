@@ -1,18 +1,18 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Campus;
-import cr.ac.ucr.orientaucr.orientaucr.repository.CampusRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.lCampus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ICampusRepository;
 
 @Service
 public class CampusServiceJPA implements lCampus {
 
     @Autowired
-    private CampusRepository repo;
+    private ICampusRepository repo;
 
     @Override
     public List<Campus> getAll(String search) {

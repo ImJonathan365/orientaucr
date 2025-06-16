@@ -49,6 +49,8 @@ public class User {
     @Column(name = "user_allow_email_notification")
     private boolean userAllowEmailNotification;
     
+    @Column(name = "jwt_token", columnDefinition = "TEXT")
+    private String jwtToken;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -151,6 +153,14 @@ public class User {
 
     public void setUserRoles(List<Roles> userRoles) {
         this.userRoles = userRoles;
+    }
+
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
     }
    
 }

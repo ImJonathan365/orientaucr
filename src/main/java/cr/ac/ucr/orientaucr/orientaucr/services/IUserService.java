@@ -2,6 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.services;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface IUserService extends CRUD<User> {
 
@@ -10,5 +11,9 @@ public interface IUserService extends CRUD<User> {
     List<User> searchAllExcept(String search, String id);
     
     List<User> getAllExcept(String id);
+    
+    Optional<User> findByEmail(String email);
+    
+    void updateUserToken(String id, String token);
     
 }
