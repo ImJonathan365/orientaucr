@@ -33,6 +33,7 @@ public class SimulationQuestion {
     private Difficulty difficulty = Difficulty.medium;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "option_order")
     @JsonManagedReference
     private List<SimulationOption> options = new ArrayList<>();
 
@@ -43,6 +44,7 @@ public class SimulationQuestion {
         this.questionId = questionId;
         this.questionText = questionText;
     }
+
     public String getQuestionId() {
         return questionId;
     }
@@ -87,6 +89,7 @@ public class SimulationQuestion {
             }
         }
     }
+
     public SimulationOption getCorrectOption() {
         return options.stream()
                 .filter(SimulationOption::isCorrect)

@@ -49,7 +49,9 @@ public ResponseEntity<Notification> create(
     try {
         ObjectMapper objectMapper = new ObjectMapper();
         Notification notification = objectMapper.readValue(notificationJson, Notification.class);
+         System.out.println("Fecha recibida del frontend: " + notification.getNotificationSendDate());
         System.out.println("Parsed notification: " + notification);
+
 
         if (file != null && !file.isEmpty()) {
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
