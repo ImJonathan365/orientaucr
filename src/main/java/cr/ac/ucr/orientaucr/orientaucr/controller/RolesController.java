@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -19,12 +20,12 @@ public class RolesController {
     public RolesController(lRolesService service) {
         this.service = service;
     }
-
+     @PreAuthorize("hasAuthority('VER ROLES')")
     @GetMapping("/all")
     public LinkedList<Roles> getAll() {
         return new LinkedList<>(service.getAll());
     }
-
+    @PreAuthorize("hasAuthority('VER ROLES')")
     @GetMapping("/{id}")
     public ResponseEntity<Roles> getById(@PathVariable String id) {
         Roles rol = service.findById(id);
@@ -34,7 +35,7 @@ public class RolesController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PreAuthorize("hasAuthority('CREAR ROLES')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody Roles rol) {
         try {
@@ -45,7 +46,7 @@ public class RolesController {
                     .body("Error al crear el rol: " + e.getMessage());
         }
     }
-
+     @PreAuthorize("hasAnyAuthority('MODIFICAR ROLES', 'EDITAR ROLES')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Roles rol) {
         try {
@@ -56,13 +57,13 @@ public class RolesController {
                     .body("Error al actualizar el rol: " + e.getMessage());
         }
     }
-
+     @PreAuthorize("hasAuthority('ELIMINAR ROLES')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         service.deleteById(id);
         return ResponseEntity.ok("Rol eliminado correctamente.");
     }
-
+   @PreAuthorize("hasAuthority('VER ROLES')")
     @GetMapping("/allPermissions")
     public LinkedList<Permission> getAllPermissions() {
         return new LinkedList<>(service.getAllPermissions());

@@ -8,4 +8,5 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 
 public interface lEventService extends CRUD<Event>{
     void InsertUserInterestedEvent(String eventId,String userId);
+    void removeUserInterestedEvent(String eventId,String userId);
 }

@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -34,12 +35,12 @@ public class EventController {
     public EventController(lEventService service) {
         this.service = service;
     }
-
+    @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/allEvents")
     public LinkedList<Event> getAllEvents() {
         return new LinkedList<>(service.getAll());
     }
-
+    @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable String id) {
         Event event = service.findById(id);
@@ -50,6 +51,7 @@ public class EventController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CREAR EVENTOS')")
     @PostMapping("/add")
     public ResponseEntity<?> addEvent(
             @RequestParam("eventTitle") String eventTitle,
@@ -61,6 +63,8 @@ public class EventController {
             @RequestParam(value = "subcampusId", required = false) String subcampusId,
             @RequestParam(value = "createdBy", required = false) String createdBy,
             @RequestParam(value = "image", required = false) MultipartFile imageFile
+            
+          
     ) {
         try {
             Event event = new Event();
@@ -73,7 +77,7 @@ public class EventController {
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);
             event.setSubcampusId((subcampusId == null || subcampusId.isBlank()) ? null : subcampusId);
             event.setCreatedBy(createdBy);
-
+            
             if (imageFile != null && !imageFile.isEmpty()) {
 
                 String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
@@ -87,7 +91,7 @@ public class EventController {
                     .body("Error al agregar el evento: " + e.getMessage());
         }
     }
-
+    @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
@@ -111,6 +115,7 @@ public class EventController {
         }
     }
 
+     @PreAuthorize("hasAnyAuthority('MODIFICAR EVENTOS', 'EDITAR EVENTOS')")
     @PutMapping("/update")
     public ResponseEntity<?> updateEvent(
             @RequestParam("eventId") String eventId,
@@ -153,8 +158,8 @@ public class EventController {
                     .body("Error al actualizar el evento: " + e.getMessage());
         }
     }
-
-    @DeleteMapping("/delete/{id}")
+   @PreAuthorize("hasAuthority('ELIMINAR EVENTOS')")
+   @DeleteMapping("/delete/{id}")
 public ResponseEntity<String> deleteEvent(@PathVariable String id) {
     try {
         Event event = service.findById(id);
@@ -174,6 +179,7 @@ public ResponseEntity<String> deleteEvent(@PathVariable String id) {
                 .body("Error al eliminar el evento: " + e.getMessage());
     }
 }
+ @PreAuthorize("hasAuthority('VER EVENTOS')")
 @PostMapping("/interested/{eventId}/{userId}")
 public ResponseEntity<String> insertUserInterestedEvent(
         @PathVariable String eventId,
@@ -186,4 +192,17 @@ public ResponseEntity<String> insertUserInterestedEvent(
                 .body("Error al marcar interés del usuario: " + e.getMessage());
     }
 }
+ @PreAuthorize("hasAuthority('VER EVENTOS')")
+@PostMapping("/remove/{eventId}/{userId}")
+public ResponseEntity<String> removeUserInterestedEvent(
+        @PathVariable String eventId,
+        @PathVariable String userId) {
+    try {
+        service.removeUserInterestedEvent(eventId, userId);
+        return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al marcar interés del usuario: " + e.getMessage());
+     }
+   }
 }

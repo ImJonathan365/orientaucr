@@ -84,4 +84,16 @@ public void InsertUserInterestedEvent(String eventId, String userId) {
     query.setParameter(2, userId);
     query.execute();
 }
+
+    @Override
+    public void removeUserInterestedEvent(String eventId, String userId) {
+StoredProcedureQuery query = entityManager
+            .createStoredProcedureQuery("sp_RemoveUserInterestedEvent")
+            .registerStoredProcedureParameter(1, String.class, ParameterMode.IN)
+            .registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+
+    query.setParameter(1, eventId);
+    query.setParameter(2, userId);
+    query.execute();    
+    }
 }
