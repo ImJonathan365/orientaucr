@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class SimulationQuestionController {
     @Autowired
     private SimulationAttemptJPA attemptService;
 
+   @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @GetMapping
     public ResponseEntity<List<SimulationQuestion>> getAll(@RequestParam(required = false) String search) {
         List<SimulationQuestion> questions
@@ -35,7 +37,7 @@ public class SimulationQuestionController {
         SimulationQuestion question = questionService.findById(id);
         return (question == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(question);
     }
-
+    @PreAuthorize("hasAuthority('CREAR PREGUNTAS SIMULADAS')")
     @PostMapping
     public ResponseEntity<String> create(@RequestBody SimulationQuestion question) {
         try {
@@ -48,7 +50,7 @@ public class SimulationQuestionController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-
+    @PreAuthorize("hasAuthority('MODIFICAR PREGUNTAS SIMULADAS')")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable String id, @RequestBody SimulationQuestion question) {
         if (!id.equals(question.getQuestionId())) {
@@ -64,7 +66,7 @@ public class SimulationQuestionController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PreAuthorize("hasAuthority('ELIMINAR PREGUNTAS SIMULADAS')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         try {
@@ -74,7 +76,7 @@ public class SimulationQuestionController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @GetMapping("/simulation-exam")
     public ResponseEntity<List<SimulationQuestion>> getSimulationExam(){
         List<SimulationQuestion> allQuestions = questionService.getAll();
@@ -98,6 +100,7 @@ public class SimulationQuestionController {
         return ResponseEntity.ok(exam);
     }
 
+    @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @PostMapping("/submit-exam")
     public ResponseEntity<String> submitExam(@RequestBody SimulationAttempt attempt) {
         if (attempt.getAttemptScore() < 0 || attempt.getAttemptScore() > 100 || attempt.getUserId() == null || attempt.getUserId().isBlank()) {
