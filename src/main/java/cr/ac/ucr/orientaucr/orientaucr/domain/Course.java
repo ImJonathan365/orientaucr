@@ -29,6 +29,12 @@ public class Course {
 
     @Column(name = "course_credits", nullable = false)
     private int courseCredits;
+    
+    @Column(name = "course_is_shared", nullable = false)
+    private boolean courseIsShared = false;
+
+    @Column(name = "course_is_asigned", nullable = false)
+    private boolean courseIsAsigned = false;
 
     @Column(name = "course_name", nullable = false, length = 100)
     private String courseName;
@@ -115,6 +121,22 @@ public class Course {
         this.courseCredits = courseCredits;
     }
 
+    public boolean isCourseIsShared() {
+        return courseIsShared;
+    }
+
+    public void setCourseIsShared(boolean courseIsShared) {
+        this.courseIsShared = courseIsShared;
+    }
+
+    public boolean isCourseIsAsigned() {
+        return courseIsAsigned;
+    }
+
+    public void setCourseIsAsigned(boolean courseIsAsigned) {
+        this.courseIsAsigned = courseIsAsigned;
+    }
+
     public String getCourseName() {
         return courseName;
     }
@@ -162,5 +184,7 @@ public class Course {
     public void setDependentCourses(Set<Course> dependentCourses) {
         this.dependentCourses = dependentCourses;
     }
+
+   
 
 }

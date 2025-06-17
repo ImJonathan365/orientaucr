@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,24 +35,22 @@ public class CareerController {
     }
 
     // Nuevo endpoint para API REST
+    @PreAuthorize("hasAuthority('VER CARRERAS')")
     @RequestMapping("/list")
     @ResponseBody
     public ResponseEntity<List<Career>> getAllCareers() {
         return ResponseEntity.ok(careerService.getAll());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Void> addCareer(@RequestBody Career career) {
-        careerService.add(career);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 
+    @PreAuthorize("hasAuthority('MODIFICAR CARRERAS')")
     @PostMapping("/update")
     public ResponseEntity<Void> updateCareer(@RequestBody Career career) {
         careerService.update(career);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR CARRERAS')")
     @DeleteMapping("/delete/{career_id}")
     public ResponseEntity<Void> deleteCareer(@PathVariable("career_id") String careerId) {
         try {
@@ -62,6 +61,7 @@ public class CareerController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VER CARRERAS')")
     @GetMapping("/searchCareer/{career_id}")
     public ResponseEntity<Career> getCareerById(@PathVariable("career_id") String careerId) {
         try {
@@ -77,12 +77,14 @@ public class CareerController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VER CURSOS')")
     @RequestMapping("/listByCurricula/{curricula_id}")
     @ResponseBody
     public ResponseEntity<List<Course>> getAllCourses(@PathVariable("curricula_id") String curriculaId) {
         return ResponseEntity.ok(careerService.getAllCourses(curriculaId));
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR CURSOS')")
     @DeleteMapping("/deleteCourse/{curricula_id}/{course_id}")
     public ResponseEntity<Void> deleteCourseFromCareer(@PathVariable("curricula_id") String curriculaId, @PathVariable("course_id") String courseId) {
         try {
@@ -93,12 +95,14 @@ public class CareerController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VER CURSOS')")
     @RequestMapping("/listCoursesForCurricula/{curricula_id}")
     @ResponseBody
     public ResponseEntity<List<Course>> getCoursesForCurricula(@PathVariable("curricula_id") String curriculaId) {
         return ResponseEntity.ok(careerService.getCoursesForCurricula(curriculaId));
     }
 
+    @PreAuthorize("hasAuthority('CREAR CURSOS')")
     @PostMapping("/addCourse")
     public ResponseEntity<Void> addCourseToCareer(@RequestBody Map<String, Object> body) {
         String curriculaId = (String) body.get("curriculaId");
@@ -108,6 +112,7 @@ public class CareerController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PreAuthorize("hasAuthority('CREAR CARRERAS')")
     @PostMapping("/addCareer")
     public ResponseEntity<Map<String, String>> addNewCareerWithCorricula(@RequestBody Career career) {
         String curriculaId = careerService.addNewCareerWithCorricula(career);
