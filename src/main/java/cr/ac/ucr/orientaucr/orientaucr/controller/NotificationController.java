@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,11 +24,13 @@ public class NotificationController {
     @Autowired
     private INotificationService notificationService;
 
+    @PreAuthorize("hasAuthority('VER NOTIFICACIONES')")
     @GetMapping
     public List<Notification> getAll() {
         return notificationService.getAll();
     }
 
+    
     @GetMapping("/{id}")
     public ResponseEntity<Notification> getById(@PathVariable String id) {
         Notification notification = notificationService.findById(id);
@@ -37,7 +40,7 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
-
+@PreAuthorize("hasAuthority('CREAR NOTIFICACIONES')")
 @PostMapping(value = "/create", consumes = {"multipart/form-data"})
 public ResponseEntity<Notification> create(
         @RequestPart("notification") String notificationJson,
@@ -88,6 +91,7 @@ public ResponseEntity<Notification> create(
     }
 }
 
+@PreAuthorize("hasAuthority('MODIFICAR NOTIFICACIONES')")
 @PutMapping(value = "/update/{id}", consumes = {"multipart/form-data"})
 public ResponseEntity<Notification> update(
         @PathVariable String id,
@@ -116,6 +120,7 @@ public ResponseEntity<Notification> update(
     }
 }
 
+@PreAuthorize("hasAuthority('ELIMINAR NOTIFICACIONES')")
     @DeleteMapping("/{id}")
 public ResponseEntity<Void> delete(@PathVariable String id) {
     try {
