@@ -1,19 +1,17 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Category;
 import cr.ac.ucr.orientaucr.orientaucr.domain.SimulationAttempt;
 import cr.ac.ucr.orientaucr.orientaucr.domain.SimulationQuestion;
 import cr.ac.ucr.orientaucr.orientaucr.jpa.SimulationAttemptJPA;
 import cr.ac.ucr.orientaucr.orientaucr.services.ISimulationQuestionService;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -24,7 +22,7 @@ public class SimulationQuestionController {
     @Autowired
     private SimulationAttemptJPA attemptService;
 
-   @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
+    @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @GetMapping
     public ResponseEntity<List<SimulationQuestion>> getAll(@RequestParam(required = false) String search) {
         List<SimulationQuestion> questions
@@ -37,6 +35,7 @@ public class SimulationQuestionController {
         SimulationQuestion question = questionService.findById(id);
         return (question == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(question);
     }
+
     @PreAuthorize("hasAuthority('CREAR PREGUNTAS SIMULADAS')")
     @PostMapping
     public ResponseEntity<String> create(@RequestBody SimulationQuestion question) {
@@ -50,6 +49,7 @@ public class SimulationQuestionController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
     @PreAuthorize("hasAuthority('MODIFICAR PREGUNTAS SIMULADAS')")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable String id, @RequestBody SimulationQuestion question) {
@@ -66,6 +66,7 @@ public class SimulationQuestionController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PreAuthorize("hasAuthority('ELIMINAR PREGUNTAS SIMULADAS')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
@@ -76,21 +77,26 @@ public class SimulationQuestionController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @GetMapping("/simulation-exam")
-    public ResponseEntity<List<SimulationQuestion>> getSimulationExam(){
+    public ResponseEntity<List<SimulationQuestion>> getSimulationExam() {
         List<SimulationQuestion> allQuestions = questionService.getAll();
         List<SimulationQuestion> verbal = new ArrayList<>();
         List<SimulationQuestion> math = new ArrayList<>();
-        for (SimulationQuestion q : allQuestions){
-            if (q.getQuestionCategory() != null){
-                switch (q.getQuestionCategory()){
-                    case verbal_logic ->
+        for (SimulationQuestion q : allQuestions) {
+            if (q.getCategories() != null) {
+                for (Category cat : q.getCategories()) {
+                    if ("verbal_logic".equals(cat.getCategoryName())) {
                         verbal.add(q);
-                    case mathematical_logic ->
+                        break;
+                    } else if ("mathematical_logic".equals(cat.getCategoryName())) {
                         math.add(q);
-                    default -> {
-                    }}}}
+                        break;
+                    }
+                }
+            }
+        }
         Collections.shuffle(verbal);
         Collections.shuffle(math);
         List<SimulationQuestion> exam = new ArrayList<>();
