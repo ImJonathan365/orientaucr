@@ -86,6 +86,44 @@ public class Course {
                 .collect(Collectors.toList());
     }
 
+    @ManyToMany
+    @JoinTable(
+        name = "course_corequisite",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "corequisite_id")
+    )
+    @JsonIgnore
+    private Set<Course> corequisites = new HashSet<>();
+
+    @ManyToMany(mappedBy = "corequisites")
+    @JsonIgnore
+    private Set<Course> dependentCorequisites = new HashSet<>();
+
+    @JsonSetter("corequisites")
+    public void setCorequisitesFromIds(List<String> corequisiteIds){
+        if (corequisiteIds == null || corequisiteIds.isEmpty()){
+            this.corequisites = new HashSet<>();
+        } else {
+            this.corequisites = corequisiteIds.stream()
+                    .map(id -> {
+                        Course c = new Course();
+                        c.setCourseId(id);
+                        return c;
+                    })
+                    .collect(Collectors.toSet());
+        }
+    }
+
+    @JsonGetter("corequisites")
+    public List<String> getCorequisitesIds() {
+        if (corequisites == null) {
+            return new ArrayList<>();
+        }
+        return corequisites.stream()
+                .map(Course::getCourseId)
+                .collect(Collectors.toList());
+    }
+
     public Course() {
     }
 
@@ -183,6 +221,22 @@ public class Course {
 
     public void setDependentCourses(Set<Course> dependentCourses) {
         this.dependentCourses = dependentCourses;
+    }
+
+    public Set<Course> getCorequisites() {
+        return corequisites;
+    }
+
+    public void setCorequisites(Set<Course> corequisites) {
+        this.corequisites = corequisites;
+    }
+
+    public Set<Course> getDependentCorequisites() {
+        return dependentCorequisites;
+    }
+
+    public void setDependentCorequisites(Set<Course> dependentCorequisites) {
+        this.dependentCorequisites = dependentCorequisites;
     }
 
    
