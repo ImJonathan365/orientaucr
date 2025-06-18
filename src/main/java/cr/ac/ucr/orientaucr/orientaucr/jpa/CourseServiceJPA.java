@@ -53,6 +53,8 @@ public class CourseServiceJPA implements ICourseService {
 
         existing.setCourseCode(t.getCourseCode());
         existing.setCourseCredits(t.getCourseCredits());
+        existing.setCourseIsShared(t.isCourseIsShared());
+        existing.setCourseIsAsigned(t.isCourseIsAsigned());
         existing.setCourseName(t.getCourseName());
         existing.setCourseDescription(t.getCourseDescription());
         existing.setCourseSemester(t.getCourseSemester());
