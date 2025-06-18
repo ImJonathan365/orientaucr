@@ -91,6 +91,7 @@ public class EventController {
                     .body("Error al agregar el evento: " + e.getMessage());
         }
     }
+    
     @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
@@ -192,6 +193,12 @@ public ResponseEntity<String> insertUserInterestedEvent(
                 .body("Error al marcar interés del usuario: " + e.getMessage());
     }
 }
+ @PreAuthorize("hasAuthority('VER EVENTOS')")
+@GetMapping("/user/{userId}/interested-events")
+public List<String> getUserInterestedEvents(@PathVariable String userId) {
+    return service.GetInterestedEventsByUser(userId); 
+}
+
  @PreAuthorize("hasAuthority('VER EVENTOS')")
 @PostMapping("/remove/{eventId}/{userId}")
 public ResponseEntity<String> removeUserInterestedEvent(

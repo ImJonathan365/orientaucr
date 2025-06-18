@@ -96,4 +96,19 @@ StoredProcedureQuery query = entityManager
     query.setParameter(2, userId);
     query.execute();    
     }
+
+   @Override
+public List<String> GetInterestedEventsByUser(String userId) {
+    StoredProcedureQuery query = entityManager
+        .createStoredProcedureQuery("sp_GetInterestedEventsByUser") // usa el nombre real del SP
+        .registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+    query.setParameter(1, userId);
+    query.execute();
+    @SuppressWarnings("unchecked")
+    List<String> eventIds = query.getResultList();
+
+    return eventIds;
 }
+
+}
+
