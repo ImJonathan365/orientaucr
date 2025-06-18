@@ -79,7 +79,6 @@ public class SimulationQuestionJPA implements ISimulationQuestionService {
             }
             option.setQuestion(question);
         }
-
         questionRepo.save(question);
     }
 
@@ -110,12 +109,9 @@ public class SimulationQuestionJPA implements ISimulationQuestionService {
         SimulationQuestion existing = questionRepo.findById(question.getQuestionId())
                 .orElseThrow(() -> new RuntimeException("Pregunta no encontrada con id: " + question.getQuestionId()));
         existing.setQuestionText(question.getQuestionText());
-        existing.setQuestionCategory(question.getQuestionCategory());
-        if (question.getDifficulty() == null) {
-            existing.setDifficulty(SimulationQuestion.Difficulty.medium);
-        } else {
-            existing.setDifficulty(question.getDifficulty());
-        }
+        existing.setDifficulty(
+                question.getDifficulty() == null ? SimulationQuestion.Difficulty.medium : question.getDifficulty()
+        );
         existing.getOptions().clear();
         for (SimulationOption option : options) {
             if (option.getOptionId() == null || option.getOptionId().isEmpty()) {
@@ -124,9 +120,11 @@ public class SimulationQuestionJPA implements ISimulationQuestionService {
             option.setQuestion(existing);
             existing.getOptions().add(option);
         }
+        existing.setCategories(question.getCategories());
+
         questionRepo.save(existing);
     }
-    
+
     @Override
     @Transactional
     public void deleteById(String id) {
