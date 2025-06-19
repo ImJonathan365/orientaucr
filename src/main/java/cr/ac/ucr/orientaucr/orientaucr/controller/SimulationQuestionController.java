@@ -78,33 +78,37 @@ public class SimulationQuestionController {
         }
     }
 
-    @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
-    @GetMapping("/simulation-exam")
-    public ResponseEntity<List<SimulationQuestion>> getSimulationExam() {
-        List<SimulationQuestion> allQuestions = questionService.getAll();
-        List<SimulationQuestion> verbal = new ArrayList<>();
-        List<SimulationQuestion> math = new ArrayList<>();
-        for (SimulationQuestion q : allQuestions) {
-            if (q.getCategories() != null) {
-                for (Category cat : q.getCategories()) {
-                    if ("verbal_logic".equals(cat.getCategoryName())) {
-                        verbal.add(q);
-                        break;
-                    } else if ("mathematical_logic".equals(cat.getCategoryName())) {
-                        math.add(q);
-                        break;
-                    }
-                }
+   @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
+@GetMapping("/simulation-exam")
+public ResponseEntity<List<SimulationQuestion>> getSimulationExam() {
+    List<SimulationQuestion> allQuestions = questionService.getAll();
+    Map<String, List<SimulationQuestion>> categoryMap = new HashMap<>();
+    for (SimulationQuestion q : allQuestions) {
+        if (q.getCategories() != null) {
+            for (Category cat : q.getCategories()) {
+                categoryMap.computeIfAbsent(cat.getCategoryName(), k -> new ArrayList<>()).add(q);
             }
         }
-        Collections.shuffle(verbal);
-        Collections.shuffle(math);
-        List<SimulationQuestion> exam = new ArrayList<>();
-        exam.addAll(verbal.stream().limit(15).toList());
-        exam.addAll(math.stream().limit(15).toList());
-        Collections.shuffle(exam);
-        return ResponseEntity.ok(exam);
     }
+    int totalQuestions = 30; 
+    int numCategories = categoryMap.size();
+    int perCategory = numCategories > 0 ? totalQuestions / numCategories : 0;
+
+    List<SimulationQuestion> exam = new ArrayList<>();
+    for (List<SimulationQuestion> questions : categoryMap.values()) {
+        Collections.shuffle(questions);
+        exam.addAll(questions.stream().limit(perCategory).toList());
+    }
+    if (exam.size() < totalQuestions) {
+        List<SimulationQuestion> restantes = new ArrayList<>(allQuestions);
+        restantes.removeAll(exam);
+        Collections.shuffle(restantes);
+        exam.addAll(restantes.stream().limit(totalQuestions - exam.size()).toList());
+    }
+
+    Collections.shuffle(exam);
+    return ResponseEntity.ok(exam);
+}
 
     @PreAuthorize("hasAuthority('VER PREGUNTAS SIMULADAS')")
     @PostMapping("/submit-exam")
