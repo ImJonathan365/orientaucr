@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ public class TestController {
     @Autowired
     private ITestService service;
 
+    @PreAuthorize("hasAuthority('VER PREGUNTAS TEST')")
     @GetMapping("/list")
     @ResponseBody
     public ResponseEntity<List<Test>> getAll() {
@@ -37,6 +39,7 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAuthority('VER PREGUNTA TEST')")
     @GetMapping("/find/{id}")
     public ResponseEntity<Test> getById(@PathVariable String id) {
         if (id == null || id.trim().isEmpty()) {
@@ -55,6 +58,7 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CREAR PREGUNTAS TEST')")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody Test test) {
         if (test == null || test.getQuestionText() == null || test.getCharacteristics() == null) {
@@ -70,6 +74,7 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MODIFICAR PREGUNTAS TEST')")
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody Test test) {
         if (test == null || test.getQuestionId() == null || test.getQuestionId().trim().isEmpty()) {
@@ -90,6 +95,7 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR PREGUNTAS TEST')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         if (id == null || id.trim().isEmpty()) {

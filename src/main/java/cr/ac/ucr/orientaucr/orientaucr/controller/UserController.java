@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('VER USUARIOS')")
     @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers(@RequestParam("userId") String userId) {
+        System.out.println("LISTAR USUARIOS");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Usuario autenticado: " + authentication.getName());
+        System.out.println("Permisos del usuario:");
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            System.out.println(" - " + authority.getAuthority());
+        }
+
         try {
             if (userId == null || userId.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(null);
@@ -177,6 +187,13 @@ public class UserController {
     @PreAuthorize("hasAuthority('VER USUARIO')")
     @GetMapping("/find/{user_id}")
     public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
+        System.out.println("OBTENER USUARIO");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Usuario autenticado: " + authentication.getName());
+        System.out.println("Permisos del usuario:");
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            System.out.println(" - " + authority.getAuthority());
+        }
         try {
             if (userId == null || userId.trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();

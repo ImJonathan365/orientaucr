@@ -4,6 +4,7 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.security.JwtUtil;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/login")
+   @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser) {
         try {
             if (loginUser.getUserEmail() == null || loginUser.getUserPassword() == null) {
@@ -36,9 +37,10 @@ public class AuthController {
                         .map(permission -> permission.getPermissionName())
                         .collect(Collectors.toList());
                 String token = jwtUtil.generateToken(user.getUserEmail(), permissions);
+                String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail(), permissions);
                 user.setJwtToken(token);
                 service.updateUserToken(user.getUserId(), token);
-                return ResponseEntity.ok(token);
+                return ResponseEntity.ok(Map.of("token", token, "refreshToken", refreshToken));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
             }
@@ -69,14 +71,36 @@ public class AuthController {
                     .map(permission -> permission.getPermissionName())
                     .collect(Collectors.toList());
             String token = jwtUtil.generateToken(user.getUserEmail(), permissions);
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail(), permissions);
             user.setJwtToken(token);
             service.add(user);
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(Map.of("token", token, "refreshToken", refreshToken));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al registrar el usuario: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
+        String refreshToken = body.get("refreshToken");
+        if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token inválido.");
+        }
+        String userEmail = jwtUtil.extractUsername(refreshToken);
+        User user = service.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+        }
+        List<String> permissions = user.getUserRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(permission -> permission.getPermissionName())
+                .collect(Collectors.toList());
+        String newToken = jwtUtil.generateToken(userEmail, permissions);
+        String newRefreshToken = jwtUtil.generateRefreshToken(userEmail, permissions);
+        service.updateUserToken(user.getUserId(), newToken);
+        return ResponseEntity.ok(Map.of("token", newToken, "refreshToken", newRefreshToken));
     }
 
 }
