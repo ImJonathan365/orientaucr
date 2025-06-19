@@ -29,6 +29,12 @@ public class Course {
 
     @Column(name = "course_credits", nullable = false)
     private int courseCredits;
+    
+    @Column(name = "course_is_shared", nullable = false)
+    private boolean courseIsShared = false;
+
+    @Column(name = "course_is_asigned", nullable = false)
+    private boolean courseIsAsigned = false;
 
     @Column(name = "course_name", nullable = false, length = 100)
     private String courseName;
@@ -80,6 +86,44 @@ public class Course {
                 .collect(Collectors.toList());
     }
 
+    @ManyToMany
+    @JoinTable(
+        name = "course_corequisite",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "corequisite_id")
+    )
+    @JsonIgnore
+    private Set<Course> corequisites = new HashSet<>();
+
+    @ManyToMany(mappedBy = "corequisites")
+    @JsonIgnore
+    private Set<Course> dependentCorequisites = new HashSet<>();
+
+    @JsonSetter("corequisites")
+    public void setCorequisitesFromIds(List<String> corequisiteIds){
+        if (corequisiteIds == null || corequisiteIds.isEmpty()){
+            this.corequisites = new HashSet<>();
+        } else {
+            this.corequisites = corequisiteIds.stream()
+                    .map(id -> {
+                        Course c = new Course();
+                        c.setCourseId(id);
+                        return c;
+                    })
+                    .collect(Collectors.toSet());
+        }
+    }
+
+    @JsonGetter("corequisites")
+    public List<String> getCorequisitesIds() {
+        if (corequisites == null) {
+            return new ArrayList<>();
+        }
+        return corequisites.stream()
+                .map(Course::getCourseId)
+                .collect(Collectors.toList());
+    }
+
     public Course() {
     }
 
@@ -113,6 +157,22 @@ public class Course {
 
     public void setCourseCredits(int courseCredits) {
         this.courseCredits = courseCredits;
+    }
+
+    public boolean isCourseIsShared() {
+        return courseIsShared;
+    }
+
+    public void setCourseIsShared(boolean courseIsShared) {
+        this.courseIsShared = courseIsShared;
+    }
+
+    public boolean isCourseIsAsigned() {
+        return courseIsAsigned;
+    }
+
+    public void setCourseIsAsigned(boolean courseIsAsigned) {
+        this.courseIsAsigned = courseIsAsigned;
     }
 
     public String getCourseName() {
@@ -162,5 +222,23 @@ public class Course {
     public void setDependentCourses(Set<Course> dependentCourses) {
         this.dependentCourses = dependentCourses;
     }
+
+    public Set<Course> getCorequisites() {
+        return corequisites;
+    }
+
+    public void setCorequisites(Set<Course> corequisites) {
+        this.corequisites = corequisites;
+    }
+
+    public Set<Course> getDependentCorequisites() {
+        return dependentCorequisites;
+    }
+
+    public void setDependentCorequisites(Set<Course> dependentCorequisites) {
+        this.dependentCorequisites = dependentCorequisites;
+    }
+
+   
 
 }

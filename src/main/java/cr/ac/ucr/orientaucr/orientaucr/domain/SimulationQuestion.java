@@ -1,10 +1,9 @@
 package cr.ac.ucr.orientaucr.orientaucr.domain;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "simulation_question")
@@ -14,9 +13,6 @@ public class SimulationQuestion {
         easy, medium, hard
     }
 
-    public enum QuestionCategory {
-        mathematical_logic, verbal_logic, other
-    }
     @Id
     @Column(name = "question_id", length = 36)
     private String questionId;
@@ -24,25 +20,33 @@ public class SimulationQuestion {
     @Column(name = "question_text", nullable = false, length = 1000)
     private String questionText;
 
-    @Column(name = "question_category")
     @Enumerated(EnumType.STRING)
-    private QuestionCategory questionCategory = QuestionCategory.other;
-
     @Column(name = "question_dificulty")
-    @Enumerated(EnumType.STRING)
     private Difficulty difficulty = Difficulty.medium;
 
+    @ManyToMany
+@JoinTable(
+    name = "simulation_question_category",
+    joinColumns = @JoinColumn(name = "question_id"),
+    inverseJoinColumns = @JoinColumn(name = "category_id")
+)
+private List<Category> categories = new ArrayList<>();
+
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "option_order")
     @JsonManagedReference
     private List<SimulationOption> options = new ArrayList<>();
 
     public SimulationQuestion() {
+        this.questionId = UUID.randomUUID().toString();
     }
 
     public SimulationQuestion(String questionId, String questionText) {
         this.questionId = questionId;
         this.questionText = questionText;
     }
+
     public String getQuestionId() {
         return questionId;
     }
@@ -59,20 +63,20 @@ public class SimulationQuestion {
         this.questionText = questionText;
     }
 
-    public QuestionCategory getQuestionCategory() {
-        return questionCategory;
-    }
-
-    public void setQuestionCategory(QuestionCategory questionCategory) {
-        this.questionCategory = questionCategory;
-    }
-
     public Difficulty getDifficulty() {
         return difficulty;
     }
 
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
     public List<SimulationOption> getOptions() {
@@ -87,6 +91,7 @@ public class SimulationQuestion {
             }
         }
     }
+
     public SimulationOption getCorrectOption() {
         return options.stream()
                 .filter(SimulationOption::isCorrect)

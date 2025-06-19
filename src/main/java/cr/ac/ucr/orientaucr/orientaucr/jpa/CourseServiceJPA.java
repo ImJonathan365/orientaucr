@@ -42,6 +42,13 @@ public class CourseServiceJPA implements ICourseService {
             course.setPrerequisites(prerequisites);
         }
 
+        if (course.getCorequisites() != null && !course.getCorequisites().isEmpty()){
+            Set<Course> corequisites = course.getCorequisites().stream()
+                    .map(coreq -> findById(coreq.getCourseId()))
+                    .collect(Collectors.toSet());
+            course.setCorequisites(corequisites);
+        }
+
         courseRepo.save(course);
     }
 
@@ -53,6 +60,8 @@ public class CourseServiceJPA implements ICourseService {
 
         existing.setCourseCode(t.getCourseCode());
         existing.setCourseCredits(t.getCourseCredits());
+        existing.setCourseIsShared(t.isCourseIsShared());
+        existing.setCourseIsAsigned(t.isCourseIsAsigned());
         existing.setCourseName(t.getCourseName());
         existing.setCourseDescription(t.getCourseDescription());
         existing.setCourseSemester(t.getCourseSemester());
@@ -67,6 +76,18 @@ public class CourseServiceJPA implements ICourseService {
         } else {
             existing.setPrerequisites(Collections.emptySet());
         }
+
+        if (t.getCorequisites() != null) {
+            Set<Course> corequisites = t.getCorequisites().stream()
+                    .map(coreq -> courseRepo.findById(coreq.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Correquisito no encontrado: "+ coreq.getCourseId())))
+                    .collect(Collectors.toSet());
+            existing.setCorequisites(corequisites);
+        } else {
+            existing.setCorequisites(Collections.emptySet());
+        };
+
+
 
         courseRepo.save(existing);
     }
@@ -86,6 +107,16 @@ public class CourseServiceJPA implements ICourseService {
             prerequisite.getDependentCourses().remove(course);
         }
         course.getPrerequisites().clear();
+
+        for (Course corequisite : new HashSet<>(course.getCorequisites())) {
+            corequisite.getDependentCorequisites().remove(course);
+        }
+        course.getCorequisites().clear();
+
+         for (Course dependentCoreq : new HashSet<>(course.getDependentCorequisites())) {
+            dependentCoreq.getCorequisites().remove(course);
+        }
+        course.getDependentCorequisites().clear();
 
         course.getCurriculumCourses().clear();
 
