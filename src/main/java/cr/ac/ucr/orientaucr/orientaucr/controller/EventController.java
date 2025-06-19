@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,8 @@ public class EventController {
     public ResponseEntity<?> addEvent(
             @RequestParam("eventTitle") String eventTitle,
             @RequestParam("eventDescription") String eventDescription,
-            @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date eventDate,
+           @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
+
             @RequestParam("eventTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime eventTime,
             @RequestParam("eventModality") Event.Modality eventModality,
             @RequestParam(value = "campusId", required = false) String campusId,
@@ -71,7 +73,7 @@ public class EventController {
             event.setEventId(UUID.randomUUID().toString());
             event.setEventTitle(eventTitle);
             event.setEventDescription(eventDescription);
-            event.setEventDate(new java.sql.Date(eventDate.getTime()));
+            event.setEventDate(java.sql.Date.valueOf(eventDate));
             event.setEventTime(eventTime);
             event.setEventModality(eventModality);
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);
@@ -122,7 +124,7 @@ public class EventController {
             @RequestParam("eventId") String eventId,
             @RequestParam("eventTitle") String eventTitle,
             @RequestParam("eventDescription") String eventDescription,
-            @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date eventDate,
+            @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
             @RequestParam("eventTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime eventTime,
             @RequestParam("eventModality") Event.Modality eventModality,
             @RequestParam(value = "campusId", required = false) String campusId,
@@ -138,7 +140,7 @@ public class EventController {
 
             event.setEventTitle(eventTitle);
             event.setEventDescription(eventDescription);
-            event.setEventDate(new java.sql.Date(eventDate.getTime()));
+          event.setEventDate(java.sql.Date.valueOf(eventDate));
             event.setEventTime(eventTime);
             event.setEventModality(eventModality);
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);

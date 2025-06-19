@@ -17,10 +17,10 @@ public class SubcampusController {
     public SubcampusController(lSubcampus service) {
         this.service = service;
     }
-
-    @GetMapping("/all")
-    public LinkedList<Subcampus> getAll() {
-        return new LinkedList<>(service.getAll());
+     
+    @GetMapping("/all/{campusId}")
+    public LinkedList<Subcampus> getAll(@PathVariable String campusId) {
+        return new LinkedList<>(service.getAll(campusId));
     }
 
 
