@@ -17,6 +17,9 @@ public interface IUserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUserEmail(String email);
 
+    @Procedure(procedureName = "sp_assign_default_role_to_user")
+    void assignDefaultRoleToUser(@Param("p_user_id") String userId);
+    
     @Procedure(procedureName = "sp_authenticate_user")
     User authenticateUser(@Param("p_email") String email, @Param("p_password") String password);
 
@@ -77,6 +80,9 @@ public interface IUserRepository extends JpaRepository<User, String> {
 
     @Procedure(procedureName = "sp_get_permissions_by_role_id")
     List<Permission> getPermissionsByRoleId(@Param("p_rol_id") String roleId);
+
+    @Procedure(procedureName = "sp_get_roles_and_permissions_by_email")
+    List<Object[]> getRolesAndPermissionsByEmail(@Param("p_email") String email);
 
     @Procedure(procedureName = "sp_find_interested_users_with_notifications")
     List<User> findInterestedUsersWithNotificationsEnabled(@Param("p_event_id") String eventId);

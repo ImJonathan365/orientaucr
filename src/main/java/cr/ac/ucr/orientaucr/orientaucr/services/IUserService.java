@@ -1,5 +1,6 @@
 package cr.ac.ucr.orientaucr.orientaucr.services;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +18,7 @@ public interface IUserService extends CRUD<User> {
     void updateUserToken(String id, String token);
     
     String getUserPasswordById(String userId);
-
+    
+    List<Roles> getRolesByEmail(String email);
+    
 }

@@ -1,12 +1,15 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.repository.IUserRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +131,8 @@ public class UserServiceJPA implements IUserService {
         user.setUserId(UUID.randomUUID().toString());
         user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
         repo.save(user);
+        repo.flush();
+        repo.assignDefaultRoleToUser(user.getUserId());
     }
 
     @Override
@@ -170,6 +175,8 @@ public class UserServiceJPA implements IUserService {
                 repo.addRoleToUser(user.getUserId(), role.getRolId());
             }
         }
+        repo.flush();
+        repo.assignDefaultRoleToUser(user.getUserId());
     }
 
     @Override
@@ -233,6 +240,37 @@ public class UserServiceJPA implements IUserService {
         }
         Optional<User> userOptional = repo.findById(userId);
         return userOptional.map(User::getUserPassword).orElse(null);
+    }
+    
+    @Override
+    @Transactional
+    public List<Roles> getRolesByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("El correo electrónico no puede ser nulo o vacío");
+        }
+        List<Roles> rolesList = new ArrayList<>();
+        Map<String, Roles> roleMap = new HashMap<>();
+        List<Object[]> results = repo.getRolesAndPermissionsByEmail(email);
+
+        for (Object[] result : results) {
+            String rolId = (String) result[0];
+            String rolName = (String) result[1];
+            String permissionId = (String) result[2];
+            String permissionName = (String) result[3];
+            String permissionDescription = (String) result[4];
+
+            Roles role = roleMap.getOrDefault(rolId, new Roles(rolId, rolName));
+            if (!roleMap.containsKey(rolId)) {
+                roleMap.put(rolId, role);
+                rolesList.add(role);
+            }
+
+            if (permissionId != null) {
+                Permission permission = new Permission(permissionId, permissionName, permissionDescription);
+                role.getPermissions().add(permission);
+            }
+        }
+        return rolesList;
     }
 
 }
