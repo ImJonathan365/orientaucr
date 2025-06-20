@@ -1,6 +1,7 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
@@ -11,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -40,14 +39,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('VER USUARIOS')")
     @GetMapping("/list")
     public ResponseEntity<List<User>> getAllUsers(@RequestParam("userId") String userId) {
-        System.out.println("LISTAR USUARIOS");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Usuario autenticado: " + authentication.getName());
-        System.out.println("Permisos del usuario:");
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            System.out.println(" - " + authority.getAuthority());
-        }
-
         try {
             if (userId == null || userId.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(null);
@@ -89,7 +80,7 @@ public class UserController {
     ) {
         String imagePath = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
             User user = mapper.readValue(userJson, User.class);
 
             if (service.findByEmail(user.getUserEmail()).isPresent()) {
@@ -120,7 +111,7 @@ public class UserController {
         String oldImage = null;
         String newImagePath = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
             User updatedUser = mapper.readValue(userJson, User.class);
 
             if (updatedUser.getUserId() == null || updatedUser.getUserId().trim().isEmpty()) {
@@ -187,13 +178,6 @@ public class UserController {
     @PreAuthorize("hasAuthority('VER USUARIO')")
     @GetMapping("/find/{user_id}")
     public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
-        System.out.println("OBTENER USUARIO");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Usuario autenticado: " + authentication.getName());
-        System.out.println("Permisos del usuario:");
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            System.out.println(" - " + authority.getAuthority());
-        }
         try {
             if (userId == null || userId.trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();
@@ -226,6 +210,22 @@ public class UserController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PreAuthorize("hasAuthority('VER USUARIOS')")
+    @GetMapping("/users/{filename:.+}")
+    public ResponseEntity<?> getUserImage(@PathVariable String filename) {
+        try {
+            if (filename == null || filename.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nombre de archivo inválido.");
+            }
+
+            return imageService.getProfilePicture(dirUser + File.separator + "Uploads" + File.separator + "users", filename);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener la imagen: " + e.getMessage());
         }
     }
 

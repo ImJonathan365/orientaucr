@@ -9,11 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,14 +32,13 @@ public class User {
     private String userEmail;
 
     @Column(name = "user_birthdate")
-    @Temporal(TemporalType.DATE)
-    private Date userBirthdate;
+    private LocalDate userBirthdate;
 
     @Column(name = "user_password", nullable = false, length = 255)
     private String userPassword;
 
-    @Column(name = "user_admission_average", precision = 5, scale = 2)
-    private BigDecimal userAdmissionAverage;
+    @Column(name = "user_diversified_average", precision = 5, scale = 2)
+    private BigDecimal userDiversifiedAverage;
 
     @Column(name = "user_profile_picture", columnDefinition = "TEXT")
     private String userProfilePicture;
@@ -63,16 +60,17 @@ public class User {
 
     public User() {}
 
-    public User(String userId, String userName, String userLastname, String userEmail, Date userBirthdate, String userPassword, BigDecimal userAdmissionAverage, String userProfilePicture, boolean userAllowEmailNotification) {
+    public User(String userId, String userName, String userLastname, String userEmail, LocalDate userBirthdate, String userPassword, BigDecimal userDiversifiedAverage, String userProfilePicture, boolean userAllowEmailNotification, String jwtToken) {
         this.userId = userId;
         this.userName = userName;
         this.userLastname = userLastname;
         this.userEmail = userEmail;
         this.userBirthdate = userBirthdate;
         this.userPassword = userPassword;
-        this.userAdmissionAverage = userAdmissionAverage;
+        this.userDiversifiedAverage = userDiversifiedAverage;
         this.userProfilePicture = userProfilePicture;
         this.userAllowEmailNotification = userAllowEmailNotification;
+        this.jwtToken = jwtToken;
     }
 
     public String getUserId() {
@@ -107,11 +105,11 @@ public class User {
         this.userEmail = userEmail;
     }
 
-    public Date getUserBirthdate() {
+    public LocalDate getUserBirthdate() {
         return userBirthdate;
     }
 
-    public void setUserBirthdate(Date userBirthdate) {
+    public void setUserBirthdate(LocalDate userBirthdate) {
         this.userBirthdate = userBirthdate;
     }
 
@@ -123,12 +121,12 @@ public class User {
         this.userPassword = userPassword;
     }
 
-    public BigDecimal getUserAdmissionAverage() {
-        return userAdmissionAverage;
+    public BigDecimal getUserDiversifiedAverage() {
+        return userDiversifiedAverage;
     }
 
-    public void setUserAdmissionAverage(BigDecimal userAdmissionAverage) {
-        this.userAdmissionAverage = userAdmissionAverage;
+    public void setUserDiversifiedAverage(BigDecimal userDiversifiedAverage) {
+        this.userDiversifiedAverage = userDiversifiedAverage;
     }
 
     public String getUserProfilePicture() {
@@ -147,14 +145,6 @@ public class User {
         this.userAllowEmailNotification = userAllowEmailNotification;
     }
 
-    public List<Roles> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(List<Roles> userRoles) {
-        this.userRoles = userRoles;
-    }
-
     public String getJwtToken() {
         return jwtToken;
     }
@@ -162,5 +152,13 @@ public class User {
     public void setJwtToken(String jwtToken) {
         this.jwtToken = jwtToken;
     }
-   
+
+    public List<Roles> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<Roles> userRoles) {
+        this.userRoles = userRoles;
+    }
+ 
 }
