@@ -31,7 +31,7 @@ public class ImageUtils {
 
         String originalFilename = imageFile.getOriginalFilename();
         if (originalFilename == null
-                || !originalFilename.matches("^[a-zA-Z0-9._-]+\\.(jpg|jpeg|png|gif|webp)$")) {
+                || !originalFilename.matches("^[\\p{L}0-9 ._\\-]+\\.(?i)(jpg|jpeg|png|gif|webp)$")) {
             throw new IOException("Nombre de archivo inválido o extensión no permitida.");
         }
 
