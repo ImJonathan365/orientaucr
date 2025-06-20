@@ -199,6 +199,9 @@ public class UserController {
     public ResponseEntity<User> getCurrentUser() {
         try {
             String authenticatedEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (authenticatedEmail == null || authenticatedEmail.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
             Optional<User> userOptional = service.findByEmail(authenticatedEmail);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();

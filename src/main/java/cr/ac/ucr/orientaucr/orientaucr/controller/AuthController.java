@@ -1,11 +1,14 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
+import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.security.JwtUtil;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,22 +61,27 @@ public class AuthController {
                     || user.getUserPassword() == null || user.getUserPassword().isBlank()) {
                 return ResponseEntity.badRequest().body("Nombre, correo y contraseña son obligatorios.");
             }
-
             if (service.findByEmail(user.getUserEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body("El correo ya está registrado.");
             }
-
             user.setUserLastname(null);
             user.setUserProfilePicture(null);
-
-            List<String> permissions = user.getUserRoles().stream()
+            service.add(user);
+            User savedUser = service.findByEmail(user.getUserEmail())
+                    .orElseThrow(() -> new IllegalStateException("Usuario no encontrado después de registrarse"));
+            
+            List<Roles> roles = service.getRolesByEmail(savedUser.getUserEmail());
+            savedUser.setUserRoles(roles);
+            
+            List<String> permissions = savedUser.getUserRoles().stream()
                     .flatMap(role -> role.getPermissions().stream())
                     .map(permission -> permission.getPermissionName())
                     .collect(Collectors.toList());
-            String token = jwtUtil.generateToken(user.getUserEmail(), permissions);
-            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail(), permissions);
-            user.setJwtToken(token);
-            service.add(user);
+            
+            String token = jwtUtil.generateToken(savedUser.getUserEmail(), permissions);
+            String refreshToken = jwtUtil.generateRefreshToken(savedUser.getUserEmail(), permissions);
+            savedUser.setJwtToken(token);
+            service.updateUserToken(savedUser.getUserId(), token);
 
             return ResponseEntity.ok(Map.of("token", token, "refreshToken", refreshToken));
         } catch (Exception e) {
@@ -81,7 +89,7 @@ public class AuthController {
                     .body("Error al registrar el usuario: " + e.getMessage());
         }
     }
-
+    
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
         String refreshToken = body.get("refreshToken");
