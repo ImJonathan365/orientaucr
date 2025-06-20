@@ -4,6 +4,7 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.repository.IUserRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -63,14 +64,25 @@ public class UserServiceJPA implements IUserService {
         }
         List<User> users = repo
                 .findByUserNameContainingOrUserLastnameContainingOrUserEmailContainingOrderByUserNameAsc(search, search, search);
-        if (!users.removeIf(user -> user.getUserId().equals(id))){
-            throw new IllegalArgumentException("El ID del usuario no existe");
-        }
+        List<User> result = new ArrayList<>();
         for (User user : users) {
-            user.setUserPassword("");
-            user.setJwtToken("");
+            if (!user.getUserId().equals(id)) {
+                User userCopy = new User();
+                userCopy.setUserId(user.getUserId());
+                userCopy.setUserName(user.getUserName());
+                userCopy.setUserLastname(user.getUserLastname());
+                userCopy.setUserEmail(user.getUserEmail());
+                userCopy.setUserBirthdate(user.getUserBirthdate());
+                userCopy.setUserPassword("");
+                userCopy.setUserDiversifiedAverage(user.getUserDiversifiedAverage());
+                userCopy.setUserAllowEmailNotification(user.isUserAllowEmailNotification());
+                userCopy.setUserProfilePicture(user.getUserProfilePicture());
+                userCopy.setJwtToken("");
+                userCopy.setUserRoles(user.getUserRoles());
+                result.add(userCopy);
+            }
         }
-        return users;
+        return result;
     }
 
     @Override
@@ -80,14 +92,25 @@ public class UserServiceJPA implements IUserService {
             throw new IllegalArgumentException("El ID del usuario no puede ser nulo o vacío");
         }
         List<User> users = repo.findAllByOrderByUserNameAsc();
-        if (!users.removeIf(user -> user.getUserId().equals(userId))) {
-            throw new IllegalArgumentException("El ID del usuario no existe");
-        }
+        List<User> result = new ArrayList<>();
         for (User user : users) {
-            user.setUserPassword("");
-            user.setJwtToken("");
+            if (!user.getUserId().equals(userId)) {
+                User userCopy = new User();
+                userCopy.setUserId(user.getUserId());
+                userCopy.setUserName(user.getUserName());
+                userCopy.setUserLastname(user.getUserLastname());
+                userCopy.setUserEmail(user.getUserEmail());
+                userCopy.setUserBirthdate(user.getUserBirthdate());
+                userCopy.setUserPassword("");
+                userCopy.setUserDiversifiedAverage(user.getUserDiversifiedAverage());
+                userCopy.setUserAllowEmailNotification(user.isUserAllowEmailNotification());
+                userCopy.setUserProfilePicture(user.getUserProfilePicture());
+                userCopy.setJwtToken("");
+                userCopy.setUserRoles(user.getUserRoles());
+                result.add(userCopy);
+            }
         }
-        return users;
+        return result;
     }
 
     @Override
@@ -120,7 +143,15 @@ public class UserServiceJPA implements IUserService {
             throw new IllegalArgumentException("El correo electrónico no puede ser nulo o vacío");
         }
 
-        user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+        String existingPassword = getUserPasswordById(user.getUserId());
+
+        if (user.getUserPassword() != null && !user.getUserPassword().trim().isEmpty()
+                && !passwordEncoder.matches(user.getUserPassword(), existingPassword)) {
+            user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+        } else {
+            user.setUserPassword(existingPassword);
+        }
+
         repo.updateUser(
                 user.getUserId(),
                 user.getUserName(),
@@ -128,7 +159,7 @@ public class UserServiceJPA implements IUserService {
                 user.getUserEmail(),
                 user.getUserBirthdate(),
                 user.getUserPassword(),
-                user.getUserAdmissionAverage(),
+                user.getUserDiversifiedAverage(),
                 user.isUserAllowEmailNotification(),
                 user.getUserProfilePicture(),
                 user.getJwtToken()
@@ -157,11 +188,21 @@ public class UserServiceJPA implements IUserService {
             throw new IllegalArgumentException("El ID del usuario no puede ser nulo o vacío");
         }
         User user = repo.findById(id).orElse(null);
+        User result = new User();
         if (user != null) {
-            user.setUserPassword("");
-            user.setJwtToken("");
+            result.setUserId(user.getUserId());
+            result.setUserName(user.getUserName());
+            result.setUserLastname(user.getUserLastname());
+            result.setUserEmail(user.getUserEmail());
+            result.setUserBirthdate(user.getUserBirthdate());
+            result.setUserPassword("");
+            result.setUserDiversifiedAverage(user.getUserDiversifiedAverage());
+            result.setUserAllowEmailNotification(user.isUserAllowEmailNotification());
+            result.setUserProfilePicture(user.getUserProfilePicture());
+            result.setJwtToken("");
+            result.setUserRoles(user.getUserRoles());
         }
-        return user;
+        return result;
     }
 
     @Override
@@ -182,6 +223,16 @@ public class UserServiceJPA implements IUserService {
             throw new IllegalArgumentException("El token JWT no puede ser nulo o vacío");
         }
         repo.updateUserToken(id, token);
+    }
+
+    @Override
+    @Transactional
+    public String getUserPasswordById(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del usuario no puede ser nulo o vacío");
+        }
+        Optional<User> userOptional = repo.findById(userId);
+        return userOptional.map(User::getUserPassword).orElse(null);
     }
 
 }

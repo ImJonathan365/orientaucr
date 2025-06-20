@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public interface IUserRepository extends JpaRepository<User, String> {
             @Param("p_name") String name,
             @Param("p_lastname") String lastname,
             @Param("p_email") String email,
-            @Param("p_birthdate") Date birthdate,
+            @Param("p_birthdate") LocalDate birthdate,
             @Param("p_password") String password,
             @Param("p_average") BigDecimal average,
             @Param("p_allow_email") Boolean allowEmail,
@@ -49,7 +49,7 @@ public interface IUserRepository extends JpaRepository<User, String> {
             @Param("p_name") String name,
             @Param("p_lastname") String lastname,
             @Param("p_email") String email,
-            @Param("p_birthdate") Date birthdate,
+            @Param("p_birthdate") LocalDate birthdate,
             @Param("p_password") String password,
             @Param("p_average") BigDecimal average,
             @Param("p_allow_email") Boolean allowEmail,

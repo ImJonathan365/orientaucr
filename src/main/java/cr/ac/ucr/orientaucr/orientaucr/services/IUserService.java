@@ -16,4 +16,6 @@ public interface IUserService extends CRUD<User> {
     
     void updateUserToken(String id, String token);
     
+    String getUserPasswordById(String userId);
+
 }
