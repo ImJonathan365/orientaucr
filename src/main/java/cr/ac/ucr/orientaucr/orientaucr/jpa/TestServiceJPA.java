@@ -51,7 +51,7 @@ public class TestServiceJPA implements ITestService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error al agregar la pregunta vocacional: " + e.getMessage(), e);
+            throw new RuntimeException("Error al agregar la pregunta.");
         }
     }
 
@@ -73,7 +73,7 @@ public class TestServiceJPA implements ITestService {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar la pregunta vocacional: " + e.getMessage(), e);
+            throw new RuntimeException("Error al actualizar la pregunta.");
         }
     }
 
@@ -90,30 +90,32 @@ public class TestServiceJPA implements ITestService {
         try {
             List<Object[]> result = repo.getQuestionById(id);
             if (result.isEmpty()) {
-                throw new Exception("No se encontró ninguna pregunta con ID: " + id);
+                return null;
             }
 
             Test test = new Test();
             List<Characteristic> characteristics = new ArrayList<>();
 
-            for (Object[] row : result) {
-                test.setQuestionId((String) row[0]);
-                test.setQuestionText((String) row[1]);
-                test.setQuestionHelpText((String) row[2]);
-                test.setIsActive((Boolean) row[3]);
-                test.setIsMultipleSelection((Boolean) row[4]);
+            if (result != null && !result.isEmpty()) {
+                for (Object[] row : result) {
+                    test.setQuestionId((String) row[0]);
+                    test.setQuestionText((String) row[1]);
+                    test.setQuestionHelpText((String) row[2]);
+                    test.setIsActive((Boolean) row[3]);
+                    test.setIsMultipleSelection((Boolean) row[4]);
 
-                Characteristic ch = new Characteristic();
-                ch.setCharacteristicsId((String) row[5]);
-                ch.setCharacteristicsName((String) row[6]);
-                ch.setCharacteristicsDescription((String) row[7]);
-                characteristics.add(ch);
+                    Characteristic ch = new Characteristic();
+                    ch.setCharacteristicsId((String) row[5]);
+                    ch.setCharacteristicsName((String) row[6]);
+                    ch.setCharacteristicsDescription((String) row[7]);
+                    characteristics.add(ch);
+                }
+
+                test.setCharacteristics(characteristics);
             }
-
-            test.setCharacteristics(characteristics);
             return test;
         } catch (Exception e) {
-            throw new RuntimeException("Error al buscar la pregunta por ID: " + e.getMessage(), e);
+            return null;
         }
     }
 

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,45 +25,47 @@ public class TestController {
 
     @PreAuthorize("hasAuthority('VER PREGUNTAS TEST')")
     @GetMapping("/list")
-    @ResponseBody
-    public ResponseEntity<List<Test>> getAll() {
+    public ResponseEntity<?> getAll() {
         try {
             List<Test> tests = service.getAll();
             if (tests == null || tests.isEmpty()) {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay preguntas registradas.");
             }
             return ResponseEntity.ok(tests);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener las preguntas: " + e.getMessage());
         }
     }
 
     @PreAuthorize("hasAuthority('VER PREGUNTA TEST')")
     @GetMapping("/find/{id}")
-    public ResponseEntity<Test> getById(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         if (id == null || id.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("El ID de la pregunta es obligatorio.");
         }
-
         try {
             Test test = service.findById(id);
             if (test != null) {
                 return ResponseEntity.ok(test);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la pregunta.");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al buscar la pregunta: " + e.getMessage());
         }
     }
 
     @PreAuthorize("hasAuthority('CREAR PREGUNTAS TEST')")
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody Test test) {
-        if (test == null || test.getQuestionText() == null || test.getCharacteristics() == null) {
-            return ResponseEntity.badRequest().body("La pregunta está incompleta.");
+        if (test.getQuestionText() == null || test.getQuestionText().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debes agregar la pregunta.");
         }
-
+        if (test.getCharacteristics()== null || test.getCharacteristics().isEmpty()) {
+            return ResponseEntity.badRequest().body("La pregunta debe tener al menos una característica.");
+        }
         try {
             service.add(test);
             return ResponseEntity.ok("Pregunta agregada correctamente.");
@@ -77,16 +78,20 @@ public class TestController {
     @PreAuthorize("hasAuthority('MODIFICAR PREGUNTAS TEST')")
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody Test test) {
-        if (test == null || test.getQuestionId() == null || test.getQuestionId().trim().isEmpty()) {
+        if (test.getQuestionId() == null || test.getQuestionId().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("El ID de la pregunta es requerido para actualizar.");
         }
-
+        if (test.getQuestionText() == null || test.getQuestionText().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debes agregar la pregunta.");
+        }
+        if (test.getCharacteristics()== null || test.getCharacteristics().isEmpty()) {
+            return ResponseEntity.badRequest().body("La pregunta debe tener al menos una característica.");
+        }
         try {
             Test existingTest = service.findById(test.getQuestionId());
             if (existingTest == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pregunta no encontrada.");
             }
-
             service.update(test);
             return ResponseEntity.ok("Pregunta actualizada correctamente.");
         } catch (Exception e) {
@@ -101,13 +106,11 @@ public class TestController {
         if (id == null || id.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("El ID es requerido para eliminar.");
         }
-
         try {
             Test existingTest = service.findById(id);
             if (existingTest == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pregunta no encontrada.");
             }
-
             service.deleteById(id);
             return ResponseEntity.ok("Pregunta eliminada correctamente.");
         } catch (Exception e) {
