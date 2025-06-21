@@ -1,6 +1,5 @@
 package cr.ac.ucr.orientaucr.orientaucr.controller;
 
-import cr.ac.ucr.orientaucr.orientaucr.domain.Permission;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Roles;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.security.JwtUtil;
@@ -8,7 +7,6 @@ import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +28,11 @@ public class AuthController {
    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser) {
         try {
-            if (loginUser.getUserEmail() == null || loginUser.getUserPassword() == null) {
-                return ResponseEntity.badRequest().body("Correo y contraseña son obligatorios.");
+            if (loginUser.getUserEmail() == null || loginUser.getUserEmail().isBlank()) {
+                return ResponseEntity.badRequest().body("El correo es obligatorio.");
+            }
+            if (loginUser.getUserPassword()== null || loginUser.getUserPassword().isBlank()) {
+                return ResponseEntity.badRequest().body("La contraseña es obligatoria.");
             }
             User user = service.authenticateUser(loginUser.getUserEmail(), loginUser.getUserPassword());
             if (user != null) {
@@ -45,7 +46,7 @@ public class AuthController {
                 service.updateUserToken(user.getUserId(), token);
                 return ResponseEntity.ok(Map.of("token", token, "refreshToken", refreshToken));
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas.");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

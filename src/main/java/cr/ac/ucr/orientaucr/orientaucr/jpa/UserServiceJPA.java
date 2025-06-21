@@ -195,8 +195,9 @@ public class UserServiceJPA implements IUserService {
             throw new IllegalArgumentException("El ID del usuario no puede ser nulo o vacío");
         }
         User user = repo.findById(id).orElse(null);
-        User result = new User();
+        User result = null;
         if (user != null) {
+            result = new User();
             result.setUserId(user.getUserId());
             result.setUserName(user.getUserName());
             result.setUserLastname(user.getUserLastname());

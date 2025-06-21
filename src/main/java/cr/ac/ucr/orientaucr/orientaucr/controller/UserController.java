@@ -93,7 +93,7 @@ public class UserController {
             }
 
             service.add(user);
-            return ResponseEntity.ok("Usuario agregado correctamente");
+            return ResponseEntity.ok("Usuario agregado correctamente.");
         } catch (Exception e) {
             if (imagePath != null) {
                 imageService.deleteImage(dirUser + File.separator + "Uploads" + File.separator + "users", imagePath);
@@ -123,6 +123,11 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
             }
 
+            Optional<User> userWithEmail = service.findByEmail(updatedUser.getUserEmail());
+            if (userWithEmail.isPresent() && !userWithEmail.get().getUserId().equals(updatedUser.getUserId())) {
+                return ResponseEntity.badRequest().body("El correo ya está registrado por otro usuario.");
+            }
+
             String authenticatedEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             if (!authenticatedEmail.equals(existingUser.getUserEmail())
                     && !SecurityContextHolder.getContext().getAuthentication().getAuthorities()
@@ -143,7 +148,7 @@ public class UserController {
             if (newImagePath != null && oldImage != null && !oldImage.equals(newImagePath)) {
                 imageService.deleteImage(dirUser + File.separator + "Uploads" + File.separator + "users", oldImage);
             }
-            return ResponseEntity.ok("Usuario actualizado correctamente");
+            return ResponseEntity.ok("Usuario actualizado correctamente.");
 
         } catch (Exception e) {
             if (newImagePath != null) {
@@ -168,7 +173,7 @@ public class UserController {
             }
 
             service.deleteById(userId);
-            return ResponseEntity.ok("Usuario eliminado correctamente");
+            return ResponseEntity.ok("Usuario eliminado correctamente.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el usuario: " + e.getMessage());
@@ -177,20 +182,34 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('VER USUARIO')")
     @GetMapping("/find/{user_id}")
-    public ResponseEntity<User> getUserById(@PathVariable("user_id") String userId) {
+    public ResponseEntity<?> getUserById(@PathVariable("user_id") String userId) {
         try {
             if (userId == null || userId.trim().isEmpty()) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("El ID de usuario es obligatorio.");
+            }
+            String authenticatedEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (authenticatedEmail == null || authenticatedEmail.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado.");
+            }
+            String currentUserId = "";
+            Optional<User> userOptional = service.findByEmail(authenticatedEmail);
+            if (userOptional.isPresent()) {
+                currentUserId = userOptional.get().getUserId();
+            }
+            if (userId.equals(currentUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("No puedes editar tus propios datos personales desde aquí.");
             }
 
             User user = service.findById(userId);
             if (user != null) {
                 return ResponseEntity.ok(user);
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el usuario.");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al buscar el usuario: " + e.getMessage());
         }
     }
 
