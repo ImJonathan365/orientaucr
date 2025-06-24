@@ -71,6 +71,13 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+    @PreAuthorize("hasAuthority('VER CURSOS')")
+    @GetMapping("/numberOfCareers/{course_id}")
+    public ResponseEntity<Integer> getNumberCarrersAssociated(@PathVariable("course_id") String courseId) {
+        int count = courseService.numberCarrersAssociated(courseId);
+        return ResponseEntity.ok(count);
+    };
 
 
 }

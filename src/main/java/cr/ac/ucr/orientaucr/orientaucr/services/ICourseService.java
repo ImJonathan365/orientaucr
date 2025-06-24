@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface ICourseService extends CRUD<Course>{
     
+    int numberCarrersAssociated(String courseId);
+    
     
 }

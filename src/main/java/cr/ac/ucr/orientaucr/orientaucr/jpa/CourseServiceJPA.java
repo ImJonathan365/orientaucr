@@ -129,5 +129,10 @@ public class CourseServiceJPA implements ICourseService {
         return courseRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Curso con " + id + " no existe"));
     }
 
+    @Override
+    public int numberCarrersAssociated(String courseId) {
+        return courseRepo.numberCarrersAssociated(courseId);
+    }
+
    
 }
