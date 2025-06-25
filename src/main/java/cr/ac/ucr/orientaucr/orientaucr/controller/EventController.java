@@ -36,11 +36,12 @@ public class EventController {
     public EventController(lEventService service) {
         this.service = service;
     }
-    @PreAuthorize("hasAuthority('VER EVENTOS')")
-    @GetMapping("/allEvents")
-    public LinkedList<Event> getAllEvents() {
-        return new LinkedList<>(service.getAll());
-    }
+  @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+@GetMapping("/allEvents")
+public LinkedList<Event> getAllEvents() {
+    return new LinkedList<>(service.getAll());
+}
+
     @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable String id) {
@@ -94,7 +95,7 @@ public class EventController {
         }
     }
     
-    @PreAuthorize("hasAuthority('VER EVENTOS')")
+  @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
@@ -182,7 +183,7 @@ public ResponseEntity<String> deleteEvent(@PathVariable String id) {
                 .body("Error al eliminar el evento: " + e.getMessage());
     }
 }
- @PreAuthorize("hasAuthority('VER EVENTOS')")
+@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
 @PostMapping("/interested/{eventId}/{userId}")
 public ResponseEntity<String> insertUserInterestedEvent(
         @PathVariable String eventId,
@@ -195,13 +196,13 @@ public ResponseEntity<String> insertUserInterestedEvent(
                 .body("Error al marcar interés del usuario: " + e.getMessage());
     }
 }
- @PreAuthorize("hasAuthority('VER EVENTOS')")
+@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
 @GetMapping("/user/{userId}/interested-events")
 public List<String> getUserInterestedEvents(@PathVariable String userId) {
     return service.GetInterestedEventsByUser(userId); 
 }
 
- @PreAuthorize("hasAuthority('VER EVENTOS')")
+@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
 @PostMapping("/remove/{eventId}/{userId}")
 public ResponseEntity<String> removeUserInterestedEvent(
         @PathVariable String eventId,
