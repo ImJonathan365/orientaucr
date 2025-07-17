@@ -6,6 +6,7 @@ import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +89,12 @@ public class UserController {
             }
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                imagePath = imageService.saveProfilePicture(imageFile, dirUser + File.separator + "Uploads" + File.separator + "users");
-                user.setUserProfilePicture(imagePath);
+                try {
+                    imagePath = imageService.saveProfilePicture(imageFile, dirUser + File.separator + "Uploads" + File.separator + "users");
+                    user.setUserProfilePicture(imagePath);
+                } catch (IOException i) {
+                    return ResponseEntity.badRequest().body(i.getMessage());
+                }
             }
 
             service.add(user);
@@ -138,8 +143,12 @@ public class UserController {
             oldImage = existingUser.getUserProfilePicture();
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                newImagePath = imageService.saveProfilePicture(imageFile, dirUser + File.separator + "Uploads" + File.separator + "users");
-                updatedUser.setUserProfilePicture(newImagePath);
+                try {
+                    newImagePath = imageService.saveProfilePicture(imageFile, dirUser + File.separator + "Uploads" + File.separator + "users");
+                    updatedUser.setUserProfilePicture(newImagePath);
+                } catch (IOException i) {
+                    return ResponseEntity.badRequest().body(i.getMessage());
+                }
             } else {
                 updatedUser.setUserProfilePicture(oldImage);
             }
@@ -172,7 +181,11 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
             }
 
+            String imageName = existingUser.getUserProfilePicture();
             service.deleteById(userId);
+            if (imageName != null) {
+                imageService.deleteImage(dirUser + File.separator + "Uploads" + File.separator + "users", imageName);
+            }
             return ResponseEntity.ok("Usuario eliminado correctamente.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
