@@ -71,20 +71,28 @@ public class ImageUtils {
         if (contentType == null
                 || !(contentType.equalsIgnoreCase("image/jpeg")
                 || contentType.equalsIgnoreCase("image/png")
-                || contentType.equalsIgnoreCase("image/gif")
-                || contentType.equalsIgnoreCase("image/webp"))) {
-            throw new IOException("Tipo de archivo no permitido. Solo JPG, PNG, GIF o WebP son aceptados para fotos de perfil.");
+                || contentType.equalsIgnoreCase("image/gif"))) {
+            throw new IOException("Tipo de archivo no permitido. Solo JPG, PNG, GIF son aceptados para fotos de perfil.");
         }
 
         String originalFilename = imageFile.getOriginalFilename();
-        if (originalFilename == null || !originalFilename.matches("^[a-zA-Z0-9_.-]+\\.(?i)(jpg|jpeg|png|gif|webp)$")) {
-            throw new IOException("Nombre de archivo inválido. Solo se permiten letras, números, punto y guion, y extensiones JPG, JPEG, PNG, GIF o WEBP.");
+        if (originalFilename == null) {
+            throw new IOException("Nombre de archivo no válido.");
         }
 
-        if (originalFilename.contains("..")) {
-            throw new IOException("Nombre de archivo contiene caracteres no permitidos (traversal detectado).");
+        if (!originalFilename.matches(".*\\.(jpg|jpeg|png|gif)$")) {
+            throw new IOException("El archivo debe tener una extensión válida: JPG, JPEG, PNG o GIF.");
         }
 
+        long dotCount = originalFilename.chars().filter(ch -> ch == '.').count();
+        if (dotCount > 1) {
+            throw new IOException("El nombre del archivo no puede tener múltiples extensiones.");
+        }
+
+        if (originalFilename.contains("..") || originalFilename.contains("/") || originalFilename.contains("\\")) {
+            throw new IOException("Nombre de archivo contiene caracteres no permitidos.");
+        }
+        
         if (imageFile.getSize() > 5 * 1024 * 1024) {
             throw new IOException("El archivo excede el tamaño máximo permitido (5MB).");
         }

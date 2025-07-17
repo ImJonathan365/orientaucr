@@ -3,21 +3,17 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 import cr.ac.ucr.orientaucr.orientaucr.services.lEventService;
 import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -36,11 +32,12 @@ public class EventController {
     public EventController(lEventService service) {
         this.service = service;
     }
-  @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
-@GetMapping("/allEvents")
-public LinkedList<Event> getAllEvents() {
-    return new LinkedList<>(service.getAll());
-}
+
+    @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+    @GetMapping("/allEvents")
+    public LinkedList<Event> getAllEvents() {
+        return new LinkedList<>(service.getAll());
+    }
 
     @PreAuthorize("hasAuthority('VER EVENTOS')")
     @GetMapping("/{id}")
@@ -58,16 +55,13 @@ public LinkedList<Event> getAllEvents() {
     public ResponseEntity<?> addEvent(
             @RequestParam("eventTitle") String eventTitle,
             @RequestParam("eventDescription") String eventDescription,
-           @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
-
+            @RequestParam("eventDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate eventDate,
             @RequestParam("eventTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime eventTime,
             @RequestParam("eventModality") Event.Modality eventModality,
             @RequestParam(value = "campusId", required = false) String campusId,
             @RequestParam(value = "subcampusId", required = false) String subcampusId,
             @RequestParam(value = "createdBy", required = false) String createdBy,
             @RequestParam(value = "image", required = false) MultipartFile imageFile
-            
-          
     ) {
         try {
             Event event = new Event();
@@ -80,7 +74,7 @@ public LinkedList<Event> getAllEvents() {
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);
             event.setSubcampusId((subcampusId == null || subcampusId.isBlank()) ? null : subcampusId);
             event.setCreatedBy(createdBy);
-            
+
             if (imageFile != null && !imageFile.isEmpty()) {
 
                 String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
@@ -94,8 +88,8 @@ public LinkedList<Event> getAllEvents() {
                     .body("Error al agregar el evento: " + e.getMessage());
         }
     }
-    
-  @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+
+    @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
@@ -119,7 +113,7 @@ public LinkedList<Event> getAllEvents() {
         }
     }
 
-     @PreAuthorize("hasAnyAuthority('MODIFICAR EVENTOS', 'EDITAR EVENTOS')")
+    @PreAuthorize("hasAnyAuthority('MODIFICAR EVENTOS', 'EDITAR EVENTOS')")
     @PutMapping("/update")
     public ResponseEntity<?> updateEvent(
             @RequestParam("eventId") String eventId,
@@ -141,7 +135,7 @@ public LinkedList<Event> getAllEvents() {
 
             event.setEventTitle(eventTitle);
             event.setEventDescription(eventDescription);
-          event.setEventDate(java.sql.Date.valueOf(eventDate));
+            event.setEventDate(java.sql.Date.valueOf(eventDate));
             event.setEventTime(eventTime);
             event.setEventModality(eventModality);
             event.setCampusId((campusId == null || campusId.isBlank()) ? null : campusId);
@@ -162,57 +156,60 @@ public LinkedList<Event> getAllEvents() {
                     .body("Error al actualizar el evento: " + e.getMessage());
         }
     }
-   @PreAuthorize("hasAuthority('ELIMINAR EVENTOS')")
-   @DeleteMapping("/delete/{id}")
-public ResponseEntity<String> deleteEvent(@PathVariable String id) {
-    try {
-        Event event = service.findById(id);
-        if (event == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
+
+    @PreAuthorize("hasAuthority('ELIMINAR EVENTOS')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteEvent(@PathVariable String id) {
+        try {
+            Event event = service.findById(id);
+            if (event == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
+            }
+            String imageFilename = event.getEventImagePath();
+            if (imageFilename != null && !imageFilename.isBlank()) {
+                ImageUtils.deleteImage(UPLOAD_DIR, imageFilename);
+            }
+
+            service.deleteById(id);
+
+            return ResponseEntity.ok("Evento eliminado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el evento: " + e.getMessage());
         }
-        String imageFilename = event.getEventImagePath();
-        if (imageFilename != null && !imageFilename.isBlank()) {
-            ImageUtils.deleteImage(UPLOAD_DIR, imageFilename);
+    }
+
+    @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+    @PostMapping("/interested/{eventId}/{userId}")
+    public ResponseEntity<String> insertUserInterestedEvent(
+            @PathVariable String eventId,
+            @PathVariable String userId) {
+        try {
+            service.InsertUserInterestedEvent(eventId, userId);
+            return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al marcar interés del usuario: " + e.getMessage());
         }
-
-        service.deleteById(id);
-
-        return ResponseEntity.ok("Evento eliminado correctamente");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error al eliminar el evento: " + e.getMessage());
     }
-}
-@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
-@PostMapping("/interested/{eventId}/{userId}")
-public ResponseEntity<String> insertUserInterestedEvent(
-        @PathVariable String eventId,
-        @PathVariable String userId) {
-    try {
-        service.InsertUserInterestedEvent(eventId, userId);
-        return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error al marcar interés del usuario: " + e.getMessage());
-    }
-}
-@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
-@GetMapping("/user/{userId}/interested-events")
-public List<String> getUserInterestedEvents(@PathVariable String userId) {
-    return service.GetInterestedEventsByUser(userId); 
-}
 
-@PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
-@PostMapping("/remove/{eventId}/{userId}")
-public ResponseEntity<String> removeUserInterestedEvent(
-        @PathVariable String eventId,
-        @PathVariable String userId) {
-    try {
-        service.removeUserInterestedEvent(eventId, userId);
-        return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error al marcar interés del usuario: " + e.getMessage());
-     }
-   }
+    @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+    @GetMapping("/user/{userId}/interested-events")
+    public List<String> getUserInterestedEvents(@PathVariable String userId) {
+        return service.GetInterestedEventsByUser(userId);
+    }
+
+    @PreAuthorize("hasAuthority('VER EVENTOS') or hasAuthority('VER EVENTOS PUBLICOS')")
+    @PostMapping("/remove/{eventId}/{userId}")
+    public ResponseEntity<String> removeUserInterestedEvent(
+            @PathVariable String eventId,
+            @PathVariable String userId) {
+        try {
+            service.removeUserInterestedEvent(eventId, userId);
+            return ResponseEntity.ok("Usuario marcado como interesado en el evento.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al marcar interés del usuario: " + e.getMessage());
+        }
+    }
 }
