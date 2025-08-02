@@ -26,11 +26,15 @@ public class JwtUtil {
     private long REFRESH_EXPIRATION_TIME;
 
     public String generateToken(String username, List<String> permissions) {
+        return generateToken(username, permissions, EXPIRATION_TIME);
+    }
+    
+    public String generateToken(String username, List<String> permissions, long expirationTime) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("permissions", permissions)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
     }

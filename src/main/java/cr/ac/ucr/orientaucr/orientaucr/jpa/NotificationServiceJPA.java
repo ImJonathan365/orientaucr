@@ -1,6 +1,10 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
-import cr.ac.ucr.orientaucr.orientaucr.domain.*;
+import cr.ac.ucr.orientaucr.orientaucr.domain.Notification;
+import cr.ac.ucr.orientaucr.orientaucr.domain.NotificationAttachment;
+import cr.ac.ucr.orientaucr.orientaucr.domain.NotificationEvent;
+import cr.ac.ucr.orientaucr.orientaucr.domain.NotificationEventId;
+import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.repository.INotificationRepository;
 import cr.ac.ucr.orientaucr.orientaucr.repository.IUserRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.EmailService;
@@ -9,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class NotificationServiceJPA implements INotificationService {
@@ -40,15 +44,11 @@ public class NotificationServiceJPA implements INotificationService {
         return new ArrayList<>(notificationRepo.findAll());
     }
 
+    @Override
     @Transactional
-    public void addWithAttachments(Notification notification, List<MultipartFile> attachments) {
+    public void add(Notification notification) {
         if (notification.getNotificationId() == null || notification.getNotificationId().isEmpty()) {
             notification.setNotificationId(UUID.randomUUID().toString());
-        }
-
-        if (attachments != null && !attachments.isEmpty()) {
-            List<NotificationAttachment> attachmentEntities = saveAttachments(notification, attachments);
-            notification.setAttachments(attachmentEntities);
         }
 
         if (notification.getNotificationEvents() != null) {
@@ -66,25 +66,34 @@ public class NotificationServiceJPA implements INotificationService {
         notificationRepo.save(notification);
     }
 
+    @Override
     @Transactional
-    public void updateWithAttachments(Notification notification, List<MultipartFile> attachments) {
+    public void update(Notification notification) {
         Notification existing = notificationRepo.findById(notification.getNotificationId())
                 .orElseThrow(() -> new RuntimeException("No existe notificación con id: " + notification.getNotificationId()));
+
+        System.out.println("Antes de actualizar - Adjuntos existentes: " + existing.getAttachments().size());
 
         existing.setNotificationTitle(notification.getNotificationTitle());
         existing.setNotificationMessage(notification.getNotificationMessage());
         existing.setNotificationSendDate(notification.getNotificationSendDate());
-        List<NotificationAttachment> existingAttachments = existing.getAttachments();
-        existingAttachments.clear();
 
-        if (attachments != null && !attachments.isEmpty()) {
-            List<NotificationAttachment> newAttachments = saveAttachments(existing, attachments);
-            existingAttachments.addAll(newAttachments);
+        existing.getAttachments().clear();
+            System.out.println("Adjuntos después de limpiar: " + existing.getAttachments().size());
+
+        if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
+            for (NotificationAttachment attachment : notification.getAttachments()) {
+                attachment.setNotification(existing);
+            }
+            existing.getAttachments().addAll(notification.getAttachments());
+                    System.out.println("Nuevos adjuntos agregados: " + notification.getAttachments().size());
+
         }
-        List<NotificationEvent> existingEvents = existing.getNotificationEvents();
-        existingEvents.clear();
 
-        if (notification.getNotificationEvents() != null) {
+            System.out.println("Final - Total adjuntos en existing: " + existing.getAttachments().size());
+
+        existing.getNotificationEvents().clear();
+        if (notification.getNotificationEvents() != null && !notification.getNotificationEvents().isEmpty()) {
             for (NotificationEvent ne : notification.getNotificationEvents()) {
                 ne.setNotification(existing);
                 if (ne.getId() == null) {
@@ -93,51 +102,13 @@ public class NotificationServiceJPA implements INotificationService {
                     id.setEventId(ne.getEvent().getEventId());
                     ne.setId(id);
                 }
-                existingEvents.add(ne);
+                existing.getNotificationEvents().add(ne);
             }
         }
+
         notificationRepo.save(existing);
-    }
+            System.out.println("Notificación actualizada y guardada con éxito.");
 
-    private List<NotificationAttachment> saveAttachments(Notification notification, List<MultipartFile> attachments) {
-        List<NotificationAttachment> savedAttachments = new ArrayList<>();
-        try {
-            Path uploadPath = Paths.get(System.getProperty("user.dir"), FILE_STORAGE_PATH);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            for (MultipartFile file : attachments) {
-                String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Path filePath = uploadPath.resolve(filename);
-
-                file.transferTo(filePath.toFile());
-
-                NotificationAttachment attachment = new NotificationAttachment();
-                attachment.setAttachmentId(UUID.randomUUID().toString());
-                attachment.setFileName(file.getOriginalFilename());
-                attachment.setFilePath(filename);
-                attachment.setFileMimeType(file.getContentType());
-                attachment.setFileSizeKb((int) (file.getSize() / 1024));
-                attachment.setNotification(notification);
-
-                savedAttachments.add(attachment);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error guardando archivo", e);
-        }
-        return savedAttachments;
-    }
-
-    @Override
-    @Transactional
-    public void add(Notification notification) {
-        addWithAttachments(notification, null);
-    }
-
-    @Override
-    @Transactional
-    public void update(Notification notification) {
-        updateWithAttachments(notification, null);
     }
 
     @Scheduled(fixedRate = 60000)
@@ -154,32 +125,27 @@ public class NotificationServiceJPA implements INotificationService {
                 for (NotificationEvent ne : notification.getNotificationEvents()) {
                     String eventId = ne.getEvent().getEventId();
                     List<User> destinatarios = userRepo.findInterestedUsersWithNotificationsEnabled(eventId);
+
+                    List<File> attachmentFiles = new ArrayList<>();
+                    if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
+                        for (NotificationAttachment attachment : notification.getAttachments()) {
+                            File file = new File(FILE_STORAGE_PATH + attachment.getFilePath());
+                            if (file.exists()) {
+                                attachmentFiles.add(file);
+                            }
+                        }
+                    }
                     for (User user : destinatarios) {
-                        if (notification.getAttachments() != null && !notification.getAttachments().isEmpty()) {
-                            for (NotificationAttachment attachment : notification.getAttachments()) {
-                                File file = new File(attachment.getFilePath());
-                                try {
-                                    emailService.sendEmailWithAttachment(
-                                            user.getUserEmail(),
-                                            notification.getNotificationTitle(),
-                                            notification.getNotificationMessage(),
-                                            file
-                                    );
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } else {
-                            try {
-                                emailService.sendEmailWithAttachment(
-                                        user.getUserEmail(),
-                                        notification.getNotificationTitle(),
-                                        notification.getNotificationMessage(),
-                                        null
-                                );
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                        try {
+                            emailService.sendEmailWithAttachment(
+                                    user.getUserEmail(),
+                                    notification.getNotificationTitle(),
+                                    notification.getNotificationMessage(),
+                                    attachmentFiles
+                            );
+                        } catch (Exception e) {
+                            System.err.println("Error al enviar correo a " + user.getUserEmail() + ": " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -193,7 +159,7 @@ public class NotificationServiceJPA implements INotificationService {
     @Transactional
     public void deleteById(String id) {
         if (!notificationRepo.existsById(id)) {
-            throw new RuntimeException("No existe notificación con la id: " + id);
+            throw new RuntimeException("No existe notificación con el id: " + id);
         }
         notificationRepo.deleteById(id);
     }
@@ -202,4 +168,13 @@ public class NotificationServiceJPA implements INotificationService {
     public Notification findById(String id) {
         return notificationRepo.findById(id).orElse(null);
     }
+
+    @Override
+    public void addWithAttachments(Notification notification, List<MultipartFile> attachments) {
+    }
+
+    @Override
+    public void updateWithAttachments(Notification notification, List<MultipartFile> attachments) {
+    }
+
 }

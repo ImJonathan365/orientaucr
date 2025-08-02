@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SubcampusRepository extends JpaRepository<Subcampus,String> {
+public interface ISubcampusRepository extends JpaRepository<Subcampus,String> {
 
     // Buscar todos los subcampus de un campus específico
     List<Subcampus> findByCampusCampusId(String campusId);

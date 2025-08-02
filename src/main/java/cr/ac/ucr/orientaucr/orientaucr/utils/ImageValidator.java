@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-public class ImageUtils {
+public class ImageValidator {
 
     public static String saveImage(MultipartFile imageFile, String uploadDir) throws IOException {
         String contentType = imageFile.getContentType();

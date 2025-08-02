@@ -48,6 +48,9 @@ public class User {
     
     @Column(name = "jwt_token", columnDefinition = "TEXT")
     private String jwtToken;
+    
+    @Column(name = "is_email_verified")
+    private boolean isEmailVerified;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -60,7 +63,7 @@ public class User {
 
     public User() {}
 
-    public User(String userId, String userName, String userLastname, String userEmail, LocalDate userBirthdate, String userPassword, BigDecimal userDiversifiedAverage, String userProfilePicture, boolean userAllowEmailNotification, String jwtToken) {
+    public User(String userId, String userName, String userLastname, String userEmail, LocalDate userBirthdate, String userPassword, BigDecimal userDiversifiedAverage, String userProfilePicture, boolean userAllowEmailNotification, String jwtToken, boolean isEmailVerified) {
         this.userId = userId;
         this.userName = userName;
         this.userLastname = userLastname;
@@ -71,6 +74,7 @@ public class User {
         this.userProfilePicture = userProfilePicture;
         this.userAllowEmailNotification = userAllowEmailNotification;
         this.jwtToken = jwtToken;
+        this.isEmailVerified = isEmailVerified;
     }
 
     public String getUserId() {
@@ -153,6 +157,14 @@ public class User {
         this.jwtToken = jwtToken;
     }
 
+    public boolean isIsEmailVerified() {
+        return isEmailVerified;
+    }
+
+    public void setIsEmailVerified(boolean isEmailVerified) {
+        this.isEmailVerified = isEmailVerified;
+    }
+
     public List<Roles> getUserRoles() {
         return userRoles;
     }
@@ -160,5 +172,5 @@ public class User {
     public void setUserRoles(List<Roles> userRoles) {
         this.userRoles = userRoles;
     }
- 
+
 }

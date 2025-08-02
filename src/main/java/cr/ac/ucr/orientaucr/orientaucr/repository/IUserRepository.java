@@ -87,4 +87,6 @@ public interface IUserRepository extends JpaRepository<User, String> {
     @Procedure(procedureName = "sp_find_interested_users_with_notifications")
     List<User> findInterestedUsersWithNotificationsEnabled(@Param("p_event_id") String eventId);
 
+    @Procedure(procedureName = "sp_verify_user_email")
+    void verifyUserEmail(@Param("p_user_id") String userId);
 }

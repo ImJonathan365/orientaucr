@@ -22,30 +22,30 @@ public class CategoryService {
     }
 
     public Category addCategory(Category category) {
-     Category existing = categoryRepo.findByCategoryName(category.getCategoryName());
-    if (existing != null) {
-        throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
-    }
-    return categoryRepo.save(category);
-    }
-    
-public void deleteCategoryById(String categoryId) {
-    if (!categoryRepo.existsById(categoryId)) {
-        throw new IllegalArgumentException("No existe una categoría con ese ID.");
-    }
-    categoryRepo.deleteById(categoryId);
-}
-
-public Category updateCategory(String categoryId, Category updatedCategory) {
-    Category existing = categoryRepo.findById(categoryId)
-            .orElseThrow(() -> new IllegalArgumentException("No existe una categoría con ese ID."));
-    Category duplicate = categoryRepo.findByCategoryName(updatedCategory.getCategoryName());
-    if (duplicate != null && !duplicate.getCategoryId().equals(categoryId)) {
-        throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
+        Category existing = categoryRepo.findByCategoryName(category.getCategoryName());
+        if (existing != null) {
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
+        }
+        return categoryRepo.save(category);
     }
 
-    existing.setCategoryName(updatedCategory.getCategoryName());
-    return categoryRepo.save(existing);
-}
+    public void deleteCategoryById(String categoryId) {
+        if (!categoryRepo.existsById(categoryId)) {
+            throw new IllegalArgumentException("No existe una categoría con ese ID.");
+        }
+        categoryRepo.deleteById(categoryId);
+    }
+
+    public Category updateCategory(String categoryId, Category updatedCategory) {
+        Category existing = categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("No existe una categoría con ese ID."));
+        Category duplicate = categoryRepo.findByCategoryName(updatedCategory.getCategoryName());
+        if (duplicate != null && !duplicate.getCategoryId().equals(categoryId)) {
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
+        }
+
+        existing.setCategoryName(updatedCategory.getCategoryName());
+        return categoryRepo.save(existing);
+    }
 
 }

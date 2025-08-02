@@ -17,7 +17,7 @@ public class NotificationAttachment {
     @Column(name = "file_path", length = 255, nullable = false)
     private String filePath;
 
-    @Column(name = "file_mime_type", length = 50, nullable = false)
+    @Column(name = "file_mime_type", length = 100, nullable = false)
     private String fileMimeType;
 
     @Column(name = "file_size_kb", nullable = false)
