@@ -2,7 +2,7 @@ package cr.ac.ucr.orientaucr.orientaucr.controller;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Event;
 import cr.ac.ucr.orientaucr.orientaucr.services.lEventService;
-import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
+import cr.ac.ucr.orientaucr.orientaucr.utils.ImageValidator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -77,7 +77,7 @@ public class EventController {
 
             if (imageFile != null && !imageFile.isEmpty()) {
 
-                String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
+                String filename = ImageValidator.saveImage(imageFile, UPLOAD_DIR);
                 event.setEventImagePath(filename);
             }
 
@@ -143,9 +143,9 @@ public class EventController {
             event.setCreatedBy(createdBy);
             if (imageFile != null && !imageFile.isEmpty()) {
                 if (event.getEventImagePath() != null) {
-                    ImageUtils.deleteImage(UPLOAD_DIR, event.getEventImagePath());
+                    ImageValidator.deleteImage(UPLOAD_DIR, event.getEventImagePath());
                 }
-                String filename = ImageUtils.saveImage(imageFile, UPLOAD_DIR);
+                String filename = ImageValidator.saveImage(imageFile, UPLOAD_DIR);
                 event.setEventImagePath(filename);
             }
 
@@ -167,7 +167,7 @@ public class EventController {
             }
             String imageFilename = event.getEventImagePath();
             if (imageFilename != null && !imageFilename.isBlank()) {
-                ImageUtils.deleteImage(UPLOAD_DIR, imageFilename);
+                ImageValidator.deleteImage(UPLOAD_DIR, imageFilename);
             }
 
             service.deleteById(id);

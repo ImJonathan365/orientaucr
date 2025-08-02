@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cr.ac.ucr.orientaucr.orientaucr.domain.User;
 import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
-import cr.ac.ucr.orientaucr.orientaucr.utils.ImageUtils;
+import cr.ac.ucr.orientaucr.orientaucr.utils.ImageValidator;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +33,7 @@ public class UserController {
     @Autowired
     private IUserService service;
 
-    private ImageUtils imageService = new ImageUtils();
+    private ImageValidator imageService = new ImageValidator();
 
     private final String dirUser = System.getProperty("user.dir");
 

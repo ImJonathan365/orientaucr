@@ -273,5 +273,14 @@ public class UserServiceJPA implements IUserService {
         }
         return rolesList;
     }
-
+    
+    @Override
+    @Transactional
+    public void verifyUserEmail(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del usuario no puede ser nulo o vacío");
+        }
+        repo.verifyUserEmail(userId);
+    }
+    
 }

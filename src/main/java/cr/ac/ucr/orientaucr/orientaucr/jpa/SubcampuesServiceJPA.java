@@ -5,7 +5,6 @@
 package cr.ac.ucr.orientaucr.orientaucr.jpa;
 
 import cr.ac.ucr.orientaucr.orientaucr.domain.Subcampus;
-import cr.ac.ucr.orientaucr.orientaucr.repository.SubcampusRepository;
 import cr.ac.ucr.orientaucr.orientaucr.services.lSubcampus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
@@ -14,6 +13,7 @@ import jakarta.persistence.StoredProcedureQuery;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import cr.ac.ucr.orientaucr.orientaucr.repository.ISubcampusRepository;
 
 /**
  *
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SubcampuesServiceJPA implements lSubcampus{
  @Autowired
-    private SubcampusRepository repo;
+    private ISubcampusRepository repo;
   @PersistenceContext
     private EntityManager entityManager;
   
