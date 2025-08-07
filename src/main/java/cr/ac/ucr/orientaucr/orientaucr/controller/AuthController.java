@@ -9,6 +9,7 @@ import cr.ac.ucr.orientaucr.orientaucr.services.IUserService;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,27 +74,40 @@ public class AuthController {
                     || user.getUserPassword() == null || user.getUserPassword().isBlank()) {
                 return ResponseEntity.badRequest().body("Nombre, correo y contraseña son obligatorios.");
             }
-            if (service.findByEmail(user.getUserEmail()).isPresent()) {
-                return ResponseEntity.badRequest().body("El correo ya está registrado.");
-            }
-            user.setUserLastname(null);
-            user.setUserProfilePicture(null);
-            user.setIsEmailVerified(false);
-            service.add(user);
-            User savedUser = service.findByEmail(user.getUserEmail())
-                    .orElseThrow(() -> new IllegalStateException("Usuario no encontrado después de registrarse"));
+            Optional<User> existingUserOpt = service.findByEmail(user.getUserEmail());
+            User targetUser;
 
-            String verificationToken = jwtUtil.generateToken(savedUser.getUserEmail(), List.of("VERIFY_EMAIL"), 24 * 60 * 60 * 1000);
-            service.updateUserToken(savedUser.getUserId(), verificationToken);
+            if (existingUserOpt.isPresent()) {
+                User existingUser = existingUserOpt.get();
+
+                if (existingUser.isIsEmailVerified()) {
+                    return ResponseEntity.badRequest().body("El correo ya está registrado y verificado.");
+                } else {
+                    existingUser.setUserName(user.getUserName());
+                    existingUser.setUserPassword(user.getUserPassword());
+                    existingUser.setUserLastname(user.getUserLastname());
+                    existingUser.setUserProfilePicture(user.getUserProfilePicture());
+                    service.update(existingUser);
+                    targetUser = existingUser;
+                }
+            } else {
+                user.setIsEmailVerified(false);
+                service.add(user);
+                targetUser = service.findByEmail(user.getUserEmail())
+                        .orElseThrow(() -> new IllegalStateException("Usuario no encontrado después de registrarse"));
+            }
+
+            String verificationToken = jwtUtil.generateToken(targetUser.getUserEmail(), List.of("VERIFY_EMAIL"), 24 * 60 * 60 * 1000);
+            service.updateUserToken(targetUser.getUserId(), verificationToken);
 
             EmailTemplate template = emailTemplateService.findByTemplateName("VERIFICAR CORREO");
             if (template == null || !template.isIsActive()) {
                 throw new IllegalStateException("Plantilla de verificación no encontrada o inactiva");
             }
 
-            String verificationUrl = "/api/auth/verify?token=" + verificationToken;
+            String verificationUrl = "/verify-email?token=" + verificationToken;
             String emailBody = template.getTemplateBody()
-                    .replace("{name}", savedUser.getUserName())
+                    .replace("{name}", targetUser.getUserName())
                     .replace("{verificationUrl}", verificationUrl);
 
             List<File> attachments = template.getAttachments().stream()
@@ -101,8 +115,13 @@ public class AuthController {
                     .filter(File::exists)
                     .collect(Collectors.toList());
 
-            emailService.sendEmailWithAttachment(savedUser.getUserEmail(), template.getTemplateSubject(), emailBody, attachments);
-            return ResponseEntity.ok("Usuario registrado. Por favor, verifica tu correo electrónico.");
+            emailService.sendEmailWithAttachment(targetUser.getUserEmail(), template.getTemplateSubject(), emailBody, attachments);
+
+            String responseMessage = existingUserOpt.isPresent()
+                    ? "Datos actualizados. Te hemos enviado un nuevo correo de verificación."
+                    : "Usuario registrado. Por favor, verifica tu correo electrónico.";
+
+            return ResponseEntity.ok(responseMessage);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al registrar el usuario: " + e.getMessage());
