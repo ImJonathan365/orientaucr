@@ -48,6 +48,9 @@ public class AuthController {
             }
             User user = service.authenticateUser(loginUser.getUserEmail(), loginUser.getUserPassword());
             if (user != null) {
+                if (!user.isIsEmailVerified()) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("El correo no ha sido verificado.");
+                }
                 List<String> permissions = user.getUserRoles().stream()
                         .flatMap(role -> role.getPermissions().stream())
                         .map(permission -> permission.getPermissionName())
@@ -140,10 +143,14 @@ public class AuthController {
             String userEmail = jwtUtil.extractUsername(token);
             User user = service.findByEmail(userEmail)
                     .orElseThrow(() -> new IllegalStateException("Usuario no encontrado."));
+            
+            String message = "";
             if (user.isIsEmailVerified()) {
-                return ResponseEntity.ok("El correo ya está verificado.");
+                message = "El correo ya está verificado.";
+            } else {
+                service.verifyUserEmail(user.getUserId());
+                message = "Correo verificado correctamente.";
             }
-            service.verifyUserEmail(user.getUserId());
 
             List<String> permissions = user.getUserRoles().stream()
                     .flatMap(role -> role.getPermissions().stream())
@@ -154,7 +161,7 @@ public class AuthController {
             service.updateUserToken(user.getUserId(), newToken);
 
             return ResponseEntity.ok(Map.of(
-                    "message", "Correo verificado correctamente.",
+                    "message", message,
                     "token", newToken,
                     "refreshToken", newRefreshToken
             ));
